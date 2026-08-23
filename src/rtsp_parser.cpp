@@ -12,7 +12,6 @@ std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf)
     const char* data_ptr = static_cast<const char*>(buf.data());
     std::string_view stv = std::string_view(data_ptr);
 
-    rtsp_parser::HeaderType rtspHeaderType{};
     std::size_t line_count{0};
     rtsp_parser::RequestFrame rtspRequestLine{};
     for (auto&& line : std::views::split(stv, '\r')) {

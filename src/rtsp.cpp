@@ -25,14 +25,10 @@ void RTSP::session(tcp::socket sock)
             else if (error)
                 throw std::system_error(error); // Some other error.
 
-            // asio::write(sock, asio::buffer(data, length));
-            // parseBuffer(asio::buffer(data, length));
             rtsp_parser::parser(asio::buffer(data, length));
 
-            // sock.send(asio::buffer(rtsp_parser::genResponse()));
             std::size_t written = asio::write(sock, asio::buffer(rtsp_parser::genResponse()));
             std::cout << "Written: " << written << std::endl;
-            // asio::write(sock, asio::buffer("\r\n"));
         }
     }
     catch (std::exception& e) {
