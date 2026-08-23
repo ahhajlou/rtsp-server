@@ -1,7 +1,7 @@
 #include "rtsp.hpp"
 
 
-void RTSP::accept(void) 
+void RTSP::accept(void)
 {
     std::cout << "I am in accept\n";
     for (;;) {

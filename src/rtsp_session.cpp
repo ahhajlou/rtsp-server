@@ -18,8 +18,8 @@ std::expected<RtspSessionState, int> RtspSession::handleEvents(RtspSessionEvent 
         case RtspSessionState::READY:
         break;
         case RtspSessionState::PLAYING:
-        break;                
+        break;
     }
 
-    // return 
+    // return
 }

@@ -16,9 +16,9 @@ std::expected<RequestLine, parse_error> parser(asio::const_buffer buf)
     std::size_t line_count{0};
     rtsp_parser::RequestLine rtspRequestLine{};
     for (auto&& line : std::views::split(stv, '\r')) {
-        std::string_view sv(line.data(), line.size()); 
+        std::string_view sv(line.data(), line.size());
         std::cout << "\n===\n" << sv << "\n===\n" << std::endl;
-        
+
 
         if (line_count == 0) {
             auto split_view = sv | std::views::split(' ');
@@ -69,7 +69,7 @@ std::expected<RequestLine, parse_error> parser(asio::const_buffer buf)
 
 std::string genResponse(void)
 {
-//     const std::string resp = 
+//     const std::string resp =
 // R"(RTSP/1.0 200 OK
 // CSeq: 1
 // Public: OPTIONS, DESCRIBE, ANNOUNCE, GET_PARAMETER, PAUSE, PLAY, RECORD, SETUP, SET_PARAMETER, TEARDOWN
@@ -77,7 +77,7 @@ std::string genResponse(void)
 // Date: Fri, 22 Aug 2026 13:58:52 GMT
 // )";
 
-    const std::string resp1 = 
+    const std::string resp1 =
 "RTSP/1.0 200 OK\r\n"
 "CSeq: 1\r\n"
 "Public: OPTIONS, DESCRIBE, ANNOUNCE, GET_PARAMETER, PAUSE, PLAY, RECORD, SETUP, SET_PARAMETER, TEARDOWN\r\n"

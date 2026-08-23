@@ -14,7 +14,7 @@ using asio::ip::tcp;
 
 class RTSP {
 public:
-    RTSP(asio::io_context& io_context, short port) 
+    RTSP(asio::io_context& io_context, short port)
     : _acceptor(io_context, tcp::endpoint(tcp::v4(), port))
     //  _std_out(io_context, ::dup(STDOUT_FILENO))
     {
