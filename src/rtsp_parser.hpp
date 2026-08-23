@@ -7,7 +7,7 @@
 
 namespace rtsp_parser {
 
-enum class parse_error {
+enum class ParseError {
     invalid_input
 };
 
@@ -20,14 +20,14 @@ enum class HeaderType {
 
 using RequestHeaderKeyValue = std::unordered_map<std::string, std::string>;
 
-struct RequestLine {
+struct RequestFrame {
     HeaderType rtspHeaderType;
     std::string rtspURI;
     std::string rtspVersion;
     RequestHeaderKeyValue rtspRequestHeaderKeyValue;
 };
 
-std::expected<RequestLine, parse_error> parser(asio::const_buffer buf);
+std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf);
 std::string genResponse(void);
 }
 
