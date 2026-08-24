@@ -1,9 +1,18 @@
 #ifndef RTSP_SESSION_HPP
 #define RTSP_SESSION_HPP
 
+#include "rtsp_parser.hpp"
+#include "RTPThread.hpp"
+#include "RTSPContext.hpp"
+
 #include <cstdint>
 #include <string>
 #include <expected>
+#include <atomic>
+#include <thread>
+#include <optional>
+
+using rtsp_parser::RequestFrame;
 
 enum class RtspSessionState {
     INIT,
@@ -22,15 +31,23 @@ enum class RtspSessionEvent {
 
 class RtspSession {
 public:
-    RtspSession() {}
+    RtspSession();
+    ~RtspSession();
 
-    void changeState(RtspSessionState newState);
-    // void handleEvents(RtspSessionEvent event);
-    std::expected<RtspSessionState, int> handleEvents(RtspSessionEvent event);
+    std::expected<std::string, int> handleEvents(const RequestFrame& requstFrame);
+
 private:
     std::size_t cseq{};
     std::string sessionId{};
+    // std::jthread rtpThreadHandle;
+    bool rtpThreadCreated{false};
+    std::shared_ptr<std::atomic<bool>> isPlaying;
     RtspSessionState currentState{RtspSessionState::INIT};
+
+    std::optional<RTPThread> rtpThread;
+    RTSPContext rtspContext;
+
+    std::expected<RtspSessionState, int> changeState(RtspSessionState newState);
 };
 
 #endif // RTSP_SESSION_HPP

@@ -15,7 +15,9 @@ enum class HeaderType {
     OPTIONS,
     DESCRIBE,
     SETUP,
-    PLAY
+    PLAY,
+    PAUSE,
+    TEARDOWN
 };
 
 using RequestHeaderKeyValue = std::unordered_map<std::string, std::string>;

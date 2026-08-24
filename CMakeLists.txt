@@ -32,10 +32,11 @@ INTERFACE pthread
 )
 
 add_executable(
-  ${PROJECT_NAME} 
+  ${PROJECT_NAME}
     src/main.cpp
     src/rtsp.cpp
     src/rtsp_parser.cpp
     src/rtsp_session.cpp
+    src/RTPThread.cpp
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE asio)

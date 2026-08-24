@@ -9,6 +9,7 @@
 //
 
 #include "rtsp.hpp"
+#include "RTSPFrame.hpp"
 
 #include <cstdlib>
 #include <iostream>

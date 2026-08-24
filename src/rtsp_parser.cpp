@@ -6,6 +6,14 @@
 #include <ranges>
 #include <string_view>
 
+static constexpr std::string_view trim(std::string_view sv) {
+    constexpr std::string_view ws = " \t\r\n";
+    auto start = sv.find_first_not_of(ws);
+    if (start == std::string_view::npos) return {};
+    auto end = sv.find_last_not_of(ws);
+    return sv.substr(start, end - start + 1);
+}
+
 namespace rtsp_parser {
 std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf)
 {
@@ -14,9 +22,17 @@ std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf)
 
     std::size_t line_count{0};
     rtsp_parser::RequestFrame rtspRequestLine{};
-    for (auto&& line : std::views::split(stv, '\r')) {
+    // for (auto&& line : std::views::split(stv, '\r')) {
+    for (auto&& line : std::views::split(stv, '\n')) {
         std::string_view sv(line.data(), line.size());
-        std::cout << "\n===\n" << sv << "\n===\n" << std::endl;
+
+        if (sv.size() <= 0) {
+            continue;
+        }
+        // std::cout << "\n===\n" << sv << "\n===\n" << std::endl;
+
+
+        sv = trim(sv);
 
 
         if (line_count == 0) {
@@ -26,8 +42,8 @@ std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf)
                 tokens.emplace_back(subrange.data(), subrange.size());
             }
 
-            if (tokens.size() <= 3) {
-                std::cout << "Parse error" << std::endl;
+            if (tokens.size() < 3) {
+                std::cout << "Parse error. Size: " << tokens.size() << std::endl;
                 return std::unexpected(ParseError::invalid_input);
             }
 
@@ -57,13 +73,20 @@ std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf)
             value.remove_prefix(std::min(value.find_first_not_of(' '), value.size()));
 
             // trim any trailing \r if you haven't already stripped it during line-splitting
-            if (!value.empty() && value.back() == '\r') value.remove_suffix(1);
+            // if (!value.empty() && value.back() == '\r') value.remove_suffix(1);
+            // if (!value.empty() && value.back() == '\n') value.remove_suffix(1);
+            key = trim(key);
+            value = trim(value);
 
             rtspRequestLine.rtspRequestHeaderKeyValue.emplace(std::string(key), std::string(value));
+
+            // std::cout << "}}} Key:value" << key << ":" << value << "\n";
         }
 
         line_count++;
     }
+
+    return rtspRequestLine;
 }
 
 std::string genResponse(void)
