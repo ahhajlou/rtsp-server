@@ -1,5 +1,4 @@
-#ifndef RTSP_PARSER_HPP
-#define RTSP_PARSER_HPP
+#pragma once
 
 #include <asio.hpp>
 #include <unordered_map>
@@ -33,4 +32,3 @@ std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf);
 std::string genResponse(void);
 }
 
-#endif // RTSP_PARSER_HPP

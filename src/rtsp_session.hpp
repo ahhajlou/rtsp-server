@@ -1,5 +1,4 @@
-#ifndef RTSP_SESSION_HPP
-#define RTSP_SESSION_HPP
+#pragma once
 
 #include "rtsp_parser.hpp"
 #include "rtp_thread.hpp"
@@ -50,4 +49,3 @@ private:
     std::expected<RtspSessionState, int> changeState(RtspSessionState newState);
 };
 
-#endif // RTSP_SESSION_HPP

@@ -1,5 +1,4 @@
-#ifndef RTSP_FRAME_HPP
-#define RTSP_FRAME_HPP
+#pragma once
 
 #include "rtsp_parser.hpp"
 #include "rtsp_context.hpp"
@@ -196,4 +195,3 @@ public:
     }
 };
 
-#endif // RTSP_FRAME_HPP

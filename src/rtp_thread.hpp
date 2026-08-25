@@ -1,5 +1,4 @@
-#ifndef RTP_THREAD_HPP
-#define RTP_THREAD_HPP
+#pragma once
 
 #include <iostream>
 #include <chrono>
@@ -35,4 +34,3 @@ private:
     void run();
 };
 
-#endif // RTP_THREAD_HPP

@@ -1,5 +1,4 @@
-#ifndef RTSP_CONTEXT_HPP
-#define RTSP_CONTEXT_HPP
+#pragma once
 
 #include "rtsp_parser.hpp"
 
@@ -50,4 +49,3 @@ inline std::string getTime(void)
     // std::cout << formatted << std::endl;
 }
 
-#endif // RTSP_CONTEXT_HPP

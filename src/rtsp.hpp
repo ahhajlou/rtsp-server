@@ -1,5 +1,4 @@
-#ifndef RTSP_HPP
-#define RTSP_HPP
+#pragma once
 
 #include "rtsp_parser.hpp"
 
@@ -32,4 +31,3 @@ private:
   char data_[max_length];
 };
 
-#endif // RTSP_HPP
