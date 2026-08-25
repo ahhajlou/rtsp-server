@@ -1,6 +1,7 @@
 {
     "editor.detectIndentation": true,
     "editor.trimAutoWhitespace": true,
+    "editor.formatOnSave": true,
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
     "files.eol": "\n"

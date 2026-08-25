@@ -10,7 +10,6 @@
 
 inline std::string getTime(void);
 
-
 struct RtspContext {
     std::size_t cseq{};
     std::string sessionId{};
@@ -18,25 +17,23 @@ struct RtspContext {
 
     struct ServerInfo {
         std::string ipAddress{};
-        uint16_t rtpPort{};
-        uint16_t rtcpPort{};
+        uint16_t    rtpPort{};
+        uint16_t    rtcpPort{};
     } serverInfo;
 
     struct ClientInfo {
         std::string ipAddress{};
-        uint16_t rtpPort{};
-        uint16_t rtcpPort{};
+        uint16_t    rtpPort{};
+        uint16_t    rtcpPort{};
     } clientInfo;
 };
 
-inline void middlewareProcess(RtspContext& rtspContext)
-{
+inline void middlewareProcess(RtspContext& rtspContext) {
     rtspContext.cseq++;
     rtspContext.nowTime = getTime();
 }
 
-inline std::string getTime(void)
-{
+inline std::string getTime(void) {
     auto now = std::chrono::system_clock::now();
 
     // 2. Drop the fractional part by flooring it to whole seconds
@@ -48,4 +45,3 @@ inline std::string getTime(void)
 
     // std::cout << formatted << std::endl;
 }
-

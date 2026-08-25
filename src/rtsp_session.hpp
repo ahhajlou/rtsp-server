@@ -13,39 +13,27 @@
 
 using rtsp_parser::RequestFrame;
 
-enum class RtspSessionState {
-    INIT,
-    READY,
-    PLAYING
-};
+enum class RtspSessionState { INIT, READY, PLAYING };
 
-enum class RtspSessionEvent {
-    OPTIONS,
-    DESCRIBE,
-    SETUP,
-    PLAY,
-    PAUSE,
-    TEARDOWN
-};
+enum class RtspSessionEvent { OPTIONS, DESCRIBE, SETUP, PLAY, PAUSE, TEARDOWN };
 
 class RtspSession {
-public:
+  public:
     RtspSession();
     ~RtspSession();
 
     std::expected<std::string, int> handleEvents(const RequestFrame& requstFrame);
 
-private:
+  private:
     std::size_t cseq{};
     std::string sessionId{};
     // std::jthread rtpThreadHandle;
-    bool rtpThreadCreated{false};
+    bool                               rtpThreadCreated{false};
     std::shared_ptr<std::atomic<bool>> isPlaying;
-    RtspSessionState currentState{RtspSessionState::INIT};
+    RtspSessionState                   currentState{RtspSessionState::INIT};
 
     std::optional<RtpThread> rtpThread;
-    RtspContext rtspContext;
+    RtspContext              rtspContext;
 
     std::expected<RtspSessionState, int> changeState(RtspSessionState newState);
 };
-

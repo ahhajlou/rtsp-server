@@ -8,20 +8,20 @@
 #include <expected>
 #include <ranges>
 
-
 class RTSPFrame {
-public:
+  public:
     RTSPFrame() {}
     ~RTSPFrame() = default;
 
-    virtual std::expected<std::string, int> parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) = 0;
+    virtual std::expected<std::string, int>
+    parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) = 0;
     virtual std::expected<std::string, int> genResponse(const RtspContext& rtspContext) = 0;
-
 };
 
-class OptionFrame: public RTSPFrame {
-public:
-    std::expected<std::string, int> parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
+class OptionFrame : public RTSPFrame {
+  public:
+    std::expected<std::string, int>
+    parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
         return "";
     }
 
@@ -29,26 +29,26 @@ public:
         // const std::string resp1 =
         //     "RTSP/1.0 200 OK\r\n"
         //     "CSeq: 1\r\n"
-        //     "Public: OPTIONS, DESCRIBE, ANNOUNCE, GET_PARAMETER, PAUSE, PLAY, RECORD, SETUP, SET_PARAMETER, TEARDOWN\r\n"
-        //     "Server: GStreamer RTSP server\r\n"
-        //     "Date: Fri, 23 Aug 2026 00:04:52 GMT\r\n\r\n";
-        const std::string resp1 = std::format(
-            "RTSP/1.0 200 OK\r\n"
-            "CSeq: {}\r\n"
-            "Public: OPTIONS, DESCRIBE, ANNOUNCE, GET_PARAMETER, PAUSE, PLAY, RECORD, SETUP, SET_PARAMETER, TEARDOWN\r\n"
-            "Server: GStreamer RTSP server\r\n"
-            "Date: {}\r\n\r\n",
-            rtspContext.cseq,
-            rtspContext.nowTime
-        );
+        //     "Public: OPTIONS, DESCRIBE, ANNOUNCE, GET_PARAMETER, PAUSE, PLAY, RECORD, SETUP,
+        //     SET_PARAMETER, TEARDOWN\r\n" "Server: GStreamer RTSP server\r\n" "Date: Fri, 23 Aug
+        //     2026 00:04:52 GMT\r\n\r\n";
+        const std::string resp1 =
+            std::format("RTSP/1.0 200 OK\r\n"
+                        "CSeq: {}\r\n"
+                        "Public: OPTIONS, DESCRIBE, ANNOUNCE, GET_PARAMETER, PAUSE, PLAY, RECORD, "
+                        "SETUP, SET_PARAMETER, TEARDOWN\r\n"
+                        "Server: GStreamer RTSP server\r\n"
+                        "Date: {}\r\n\r\n",
+                        rtspContext.cseq, rtspContext.nowTime);
 
         return resp1;
     }
 };
 
-class DescribeFrame: public RTSPFrame {
-public:
-    std::expected<std::string, int> parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
+class DescribeFrame : public RTSPFrame {
+  public:
+    std::expected<std::string, int>
+    parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
         return "";
     }
 
@@ -76,7 +76,9 @@ public:
             "b=AS:2097\r\n"
             "a=rtpmap:96 H264/90000\r\n"
             "a=framerate:29.970029970029969\r\n"
-            "a=fmtp:96 packetization-mode=1;sprop-parameter-sets=Z0LAKNkAeAIn5cBagICAoAAAfSAAHUwR4wZJ,aMuMsg==;profile-level-id=42c028;level-asymmetry-allowed=1\r\n"
+            "a=fmtp:96 "
+            "packetization-mode=1;sprop-parameter-sets=Z0LAKNkAeAIn5cBagICAoAAAfSAAHUwR4wZJ,aMuMsg="
+            "=;profile-level-id=42c028;level-asymmetry-allowed=1\r\n"
             "a=control:stream=0\r\n"
             "a=ts-refclk:local\r\n"
             "a=mediaclk:sender\r\n"
@@ -86,9 +88,10 @@ public:
     }
 };
 
-class SetupFrame: public RTSPFrame {
-public:
-    std::expected<std::string, int> parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
+class SetupFrame : public RTSPFrame {
+  public:
+    std::expected<std::string, int>
+    parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
         std::println("/// parsing SetupFrame ///");
         rtspContext.clientInfo.ipAddress = "127.0.0.1";
 
@@ -116,29 +119,28 @@ public:
         const std::string resp1 = std::format(
             "RTSP/1.0 200 OK\r\n"
             "CSeq: 3\r\n"
-            "Transport: RTP/AVP;unicast;client_port={}-{};server_port={}-{};ssrc=0C58285D;mode=\"PLAY\"\r\n"
+            "Transport: "
+            "RTP/AVP;unicast;client_port={}-{};server_port={}-{};ssrc=0C58285D;mode=\"PLAY\"\r\n"
             "Server: GStreamer RTSP server\r\n"
             "Session: IL6nZaxJj2DLf9_-\r\n"
             "Date: {}\r\n\r\n",
-            rtspContext.clientInfo.rtpPort,
-            rtspContext.clientInfo.rtcpPort,
-            rtspContext.serverInfo.rtpPort,
-            rtspContext.serverInfo.rtcpPort,
-            rtspContext.nowTime
-        );
+            rtspContext.clientInfo.rtpPort, rtspContext.clientInfo.rtcpPort,
+            rtspContext.serverInfo.rtpPort, rtspContext.serverInfo.rtcpPort, rtspContext.nowTime);
 
         return resp1;
     }
 
-private:
+  private:
     struct ClientPortsInfo {
         uint16_t RtpPort;
         uint16_t RtcpPort;
     };
-    // static std::expected<std::string, int> getClientPort(rtsp_parser::RequestHeaderKeyValue& requestHeaderKeyValue)
-    static std::optional<ClientPortsInfo> getClientPort(const rtsp_parser::RequestFrame& requstFrame)
-    {
-        std::println("requestHeaderKeyValue.size=[{}]", requstFrame.rtspRequestHeaderKeyValue.size());
+    // static std::expected<std::string, int> getClientPort(rtsp_parser::RequestHeaderKeyValue&
+    // requestHeaderKeyValue)
+    static std::optional<ClientPortsInfo>
+    getClientPort(const rtsp_parser::RequestFrame& requstFrame) {
+        std::println("requestHeaderKeyValue.size=[{}]",
+                     requstFrame.rtspRequestHeaderKeyValue.size());
         auto it = requstFrame.rtspRequestHeaderKeyValue.find("Transport");
         if (it == requstFrame.rtspRequestHeaderKeyValue.end()) {
             return std::nullopt;
@@ -152,32 +154,38 @@ private:
     static std::optional<ClientPortsInfo> parseClientPortInfo(std::string_view s) {
         // find "client_port="
         constexpr std::string_view key = "client_port=";
-        auto pos = s.find(key);
-        if (pos == std::string_view::npos) return std::nullopt;
+        auto                       pos = s.find(key);
+        if (pos == std::string_view::npos)
+            return std::nullopt;
 
         std::string_view rest = s.substr(pos + key.size());
 
         // rest now looks like "31438-31439" (possibly with trailing chars/params)
         auto dash = rest.find('-');
-        if (dash == std::string_view::npos) return std::nullopt;
+        if (dash == std::string_view::npos)
+            return std::nullopt;
 
-        std::string_view lowSv  = rest.substr(0, dash);
+        std::string_view lowSv = rest.substr(0, dash);
         std::string_view highSv = rest.substr(dash + 1);
 
         ClientPortsInfo result{};
         auto [p1, ec1] = std::from_chars(lowSv.data(), lowSv.data() + lowSv.size(), result.RtpPort);
-        if (ec1 != std::errc()) return std::nullopt;
+        if (ec1 != std::errc())
+            return std::nullopt;
 
-        auto [p2, ec2] = std::from_chars(highSv.data(), highSv.data() + highSv.size(), result.RtcpPort);
-        if (ec2 != std::errc()) return std::nullopt;
+        auto [p2, ec2] =
+            std::from_chars(highSv.data(), highSv.data() + highSv.size(), result.RtcpPort);
+        if (ec2 != std::errc())
+            return std::nullopt;
 
         return result;
     }
 };
 
-class PlayFrame: public RTSPFrame {
-public:
-    std::expected<std::string, int> parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
+class PlayFrame : public RTSPFrame {
+  public:
+    std::expected<std::string, int>
+    parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
         return "";
     }
 
@@ -194,4 +202,3 @@ public:
         return resp1;
     }
 };
-

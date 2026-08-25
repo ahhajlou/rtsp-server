@@ -2,23 +2,20 @@
 
 #include <print>
 
-RtpThread::RtpThread(
-    asio::ip::udp::endpoint clientEndpoint,
-    std::shared_ptr<std::atomic<bool>> isPlaying
-) : m_clientEndpoint(clientEndpoint), m_isPlaying(isPlaying), m_running(true), m_serverRtpPort(0)
-{
+RtpThread::RtpThread(asio::ip::udp::endpoint            clientEndpoint,
+                     std::shared_ptr<std::atomic<bool>> isPlaying)
+    : m_clientEndpoint(clientEndpoint), m_isPlaying(isPlaying), m_running(true),
+      m_serverRtpPort(0) {
     std::println("/// Starting thread ///");
     m_thread = std::thread(&RtpThread::run, this);
 }
 
-RtpThread::~RtpThread()
-{
+RtpThread::~RtpThread() {
     std::println("/// ~RTPThread ///");
     stop();
 }
 
-void RtpThread::stop(void)
-{
+void RtpThread::stop(void) {
     std::println("/// Stop called ///");
     m_running.store(false, std::memory_order_release);
     if (m_thread.joinable()) {
@@ -26,12 +23,11 @@ void RtpThread::stop(void)
     }
 }
 
-void RtpThread::run()
-{
+void RtpThread::run() {
     using namespace std::chrono_literals;
 
     std::cout << "Thread started\n";
-    asio::io_context io;                       // local, never needs run()
+    asio::io_context      io;                                // local, never needs run()
     asio::ip::udp::socket rtp(io, {asio::ip::udp::v4(), 0}); // server_port
     m_serverRtpPort = rtp.local_endpoint().port();
     std::println("@@@@ rtp port = [{}] @@@@", m_serverRtpPort);
@@ -43,7 +39,7 @@ void RtpThread::run()
                 m_isPlaying->wait(false, std::memory_order_acquire);
             }
 
-        // while (isPlaying->load()) {
+            // while (isPlaying->load()) {
             // if (stoken.stop_requested()) {
             //     break;
             // }
@@ -54,7 +50,7 @@ void RtpThread::run()
             rtp.send_to(asio::buffer("Hello World\r\n"), m_clientEndpoint);
             std::this_thread::sleep_for(2s); // Sleeps for 2 seconds
         } catch (std::exception& e) {
-        std::cerr << "Exception in thread: " << e.what() << "\n";
+            std::cerr << "Exception in thread: " << e.what() << "\n";
         }
     }
 

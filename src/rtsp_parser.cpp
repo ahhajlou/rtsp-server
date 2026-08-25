@@ -8,19 +8,19 @@
 
 static constexpr std::string_view trim(std::string_view sv) {
     constexpr std::string_view ws = " \t\r\n";
-    auto start = sv.find_first_not_of(ws);
-    if (start == std::string_view::npos) return {};
+    auto                       start = sv.find_first_not_of(ws);
+    if (start == std::string_view::npos)
+        return {};
     auto end = sv.find_last_not_of(ws);
     return sv.substr(start, end - start + 1);
 }
 
 namespace rtsp_parser {
-std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf)
-{
-    const char* data_ptr = static_cast<const char*>(buf.data());
+std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf) {
+    const char*      data_ptr = static_cast<const char*>(buf.data());
     std::string_view stv = std::string_view(data_ptr);
 
-    std::size_t line_count{0};
+    std::size_t               line_count{0};
     rtsp_parser::RequestFrame rtspRequestLine{};
     // for (auto&& line : std::views::split(stv, '\r')) {
     for (auto&& line : std::views::split(stv, '\n')) {
@@ -31,12 +31,10 @@ std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf)
         }
         // std::cout << "\n===\n" << sv << "\n===\n" << std::endl;
 
-
         sv = trim(sv);
 
-
         if (line_count == 0) {
-            auto split_view = sv | std::views::split(' ');
+            auto                          split_view = sv | std::views::split(' ');
             std::vector<std::string_view> tokens;
             for (auto&& subrange : split_view) {
                 tokens.emplace_back(subrange.data(), subrange.size());
@@ -89,25 +87,22 @@ std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf)
     return rtspRequestLine;
 }
 
-std::string genResponse(void)
-{
-//     const std::string resp =
-// R"(RTSP/1.0 200 OK
-// CSeq: 1
-// Public: OPTIONS, DESCRIBE, ANNOUNCE, GET_PARAMETER, PAUSE, PLAY, RECORD, SETUP, SET_PARAMETER, TEARDOWN
-// Server: GStreamer RTSP server
-// Date: Fri, 22 Aug 2026 13:58:52 GMT
-// )";
+std::string genResponse(void) {
+    //     const std::string resp =
+    // R"(RTSP/1.0 200 OK
+    // CSeq: 1
+    // Public: OPTIONS, DESCRIBE, ANNOUNCE, GET_PARAMETER, PAUSE, PLAY, RECORD, SETUP,
+    // SET_PARAMETER, TEARDOWN Server: GStreamer RTSP server Date: Fri, 22 Aug 2026 13:58:52 GMT
+    // )";
 
-    const std::string resp1 =
-"RTSP/1.0 200 OK\r\n"
-"CSeq: 1\r\n"
-"Public: OPTIONS, DESCRIBE, ANNOUNCE, GET_PARAMETER, PAUSE, PLAY, RECORD, SETUP, SET_PARAMETER, TEARDOWN\r\n"
-"Server: GStreamer RTSP server\r\n"
-"Date: Fri, 23 Aug 2026 00:04:52 GMT\r\n\r\n";
+    const std::string resp1 = "RTSP/1.0 200 OK\r\n"
+                              "CSeq: 1\r\n"
+                              "Public: OPTIONS, DESCRIBE, ANNOUNCE, GET_PARAMETER, PAUSE, PLAY, "
+                              "RECORD, SETUP, SET_PARAMETER, TEARDOWN\r\n"
+                              "Server: GStreamer RTSP server\r\n"
+                              "Date: Fri, 23 Aug 2026 00:04:52 GMT\r\n\r\n";
 
     std::cout << "Response: [ " << resp1 << "] " << std::endl;
-
 
     return resp1;
 }

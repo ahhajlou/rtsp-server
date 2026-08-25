@@ -2,17 +2,14 @@
 #include "rtsp_parser.hpp"
 #include "rtsp_session.hpp"
 
-
-void Rtsp::accept(void)
-{
+void Rtsp::accept(void) {
     std::cout << "I am in accept\n";
     for (;;) {
         std::thread(session, _acceptor.accept()).detach();
     }
 }
 
-void Rtsp::session(tcp::socket sock)
-{
+void Rtsp::session(tcp::socket sock) {
     RtspSession rtspSession{};
 
     try {
@@ -21,7 +18,7 @@ void Rtsp::session(tcp::socket sock)
             // std::array<char, max_length> data;
 
             std::error_code error;
-            size_t length = sock.read_some(asio::buffer(data), error);
+            size_t          length = sock.read_some(asio::buffer(data), error);
             if (error == asio::error::eof) {
                 std::cout << "Error: Connection closed" << std::endl;
                 break; // Connection closed cleanly by peer.
@@ -67,8 +64,7 @@ void Rtsp::session(tcp::socket sock)
             std::size_t written = asio::write(sock, asio::buffer(eventResult.value()));
             std::cout << "Written: " << written << std::endl;
         }
-    }
-    catch (std::exception& e) {
+    } catch (std::exception& e) {
         std::cerr << "Exception in thread: " << e.what() << "\n";
     }
 }
