@@ -2,6 +2,7 @@
 
 #include <print>
 
+namespace rtsp_server {
 RtpThread::RtpThread(asio::ip::udp::endpoint            clientEndpoint,
                      std::shared_ptr<std::atomic<bool>> isPlaying)
     : m_clientEndpoint(clientEndpoint), m_isPlaying(isPlaying), m_running(true),
@@ -58,3 +59,4 @@ void RtpThread::run() {
     rtp.send_to(asio::buffer("Bye\r\n"), m_clientEndpoint);
     rtp.close();
 }
+};

@@ -6,6 +6,7 @@
 #include <atomic>
 #include <asio.hpp>
 
+namespace rtsp_server {
 class RtpThread {
   public:
     RtpThread() = delete;
@@ -29,4 +30,5 @@ class RtpThread {
     uint16_t                           m_serverRtpPort;
 
     void run();
+};
 };

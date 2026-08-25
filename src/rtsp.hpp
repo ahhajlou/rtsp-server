@@ -8,6 +8,7 @@
 #include <asio/ts/buffer.hpp>
 #include <asio/ts/internet.hpp>
 
+namespace rtsp_server {
 using asio::ip::tcp;
 
 class Rtsp {
@@ -27,3 +28,4 @@ class Rtsp {
     enum { max_length = 1024 };
     char data_[max_length];
 };
+} // namespace rtsp_server

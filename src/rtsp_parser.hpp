@@ -4,8 +4,7 @@
 #include <unordered_map>
 #include <expected>
 
-namespace rtsp_parser {
-
+namespace rtsp_server {
 enum class ParseError { invalid_input };
 
 enum class HeaderType { OPTIONS, DESCRIBE, SETUP, PLAY, PAUSE, TEARDOWN };
@@ -21,4 +20,4 @@ struct RequestFrame {
 
 std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf);
 std::string                             genResponse(void);
-} // namespace rtsp_parser
+}; // namespace rtsp_server

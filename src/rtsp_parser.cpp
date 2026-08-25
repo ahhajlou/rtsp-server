@@ -6,7 +6,10 @@
 #include <ranges>
 #include <string_view>
 
-static constexpr std::string_view trim(std::string_view sv) {
+namespace rtsp_server {
+
+namespace {
+constexpr std::string_view trim(std::string_view sv) {
     constexpr std::string_view ws = " \t\r\n";
     auto                       start = sv.find_first_not_of(ws);
     if (start == std::string_view::npos)
@@ -14,14 +17,14 @@ static constexpr std::string_view trim(std::string_view sv) {
     auto end = sv.find_last_not_of(ws);
     return sv.substr(start, end - start + 1);
 }
+}; // namespace
 
-namespace rtsp_parser {
 std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf) {
     const char*      data_ptr = static_cast<const char*>(buf.data());
     std::string_view stv = std::string_view(data_ptr);
 
-    std::size_t               line_count{0};
-    rtsp_parser::RequestFrame rtspRequestLine{};
+    std::size_t  line_count{0};
+    RequestFrame rtspRequestLine{};
     // for (auto&& line : std::views::split(stv, '\r')) {
     for (auto&& line : std::views::split(stv, '\n')) {
         std::string_view sv(line.data(), line.size());
@@ -46,13 +49,13 @@ std::expected<RequestFrame, ParseError> parser(asio::const_buffer buf) {
             }
 
             if (tokens[0] == "OPTIONS") {
-                rtspRequestLine.rtspHeaderType = rtsp_parser::HeaderType::OPTIONS;
+                rtspRequestLine.rtspHeaderType = HeaderType::OPTIONS;
             } else if (tokens[0] == "DESCRIBE") {
-                rtspRequestLine.rtspHeaderType = rtsp_parser::HeaderType::DESCRIBE;
+                rtspRequestLine.rtspHeaderType = HeaderType::DESCRIBE;
             } else if (tokens[0] == "SETUP") {
-                rtspRequestLine.rtspHeaderType = rtsp_parser::HeaderType::SETUP;
+                rtspRequestLine.rtspHeaderType = HeaderType::SETUP;
             } else if (tokens[0] == "PLAY") {
-                rtspRequestLine.rtspHeaderType = rtsp_parser::HeaderType::PLAY;
+                rtspRequestLine.rtspHeaderType = HeaderType::PLAY;
             }
 
             rtspRequestLine.rtspURI = tokens[1];
@@ -106,4 +109,4 @@ std::string genResponse(void) {
 
     return resp1;
 }
-} // namespace rtsp_parser
+}; // namespace rtsp_server

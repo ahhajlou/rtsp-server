@@ -11,8 +11,7 @@
 #include <thread>
 #include <optional>
 
-using rtsp_parser::RequestFrame;
-
+namespace rtsp_server {
 enum class RtspSessionState { INIT, READY, PLAYING };
 
 enum class RtspSessionEvent { OPTIONS, DESCRIBE, SETUP, PLAY, PAUSE, TEARDOWN };
@@ -37,3 +36,4 @@ class RtspSession {
 
     std::expected<RtspSessionState, int> changeState(RtspSessionState newState);
 };
+}; // namespace rtsp_server

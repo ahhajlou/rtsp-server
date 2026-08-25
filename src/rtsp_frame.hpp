@@ -8,20 +8,21 @@
 #include <expected>
 #include <ranges>
 
+namespace rtsp_server {
 class RTSPFrame {
   public:
     RTSPFrame() {}
     ~RTSPFrame() = default;
 
-    virtual std::expected<std::string, int>
-    parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) = 0;
+    virtual std::expected<std::string, int> parseFrame(RtspContext&        rtspContext,
+                                                       const RequestFrame& requstFrame) = 0;
     virtual std::expected<std::string, int> genResponse(const RtspContext& rtspContext) = 0;
 };
 
 class OptionFrame : public RTSPFrame {
   public:
-    std::expected<std::string, int>
-    parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
+    std::expected<std::string, int> parseFrame(RtspContext&        rtspContext,
+                                               const RequestFrame& requstFrame) override {
         return "";
     }
 
@@ -47,8 +48,8 @@ class OptionFrame : public RTSPFrame {
 
 class DescribeFrame : public RTSPFrame {
   public:
-    std::expected<std::string, int>
-    parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
+    std::expected<std::string, int> parseFrame(RtspContext&        rtspContext,
+                                               const RequestFrame& requstFrame) override {
         return "";
     }
 
@@ -90,8 +91,8 @@ class DescribeFrame : public RTSPFrame {
 
 class SetupFrame : public RTSPFrame {
   public:
-    std::expected<std::string, int>
-    parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
+    std::expected<std::string, int> parseFrame(RtspContext&        rtspContext,
+                                               const RequestFrame& requstFrame) override {
         std::println("/// parsing SetupFrame ///");
         rtspContext.clientInfo.ipAddress = "127.0.0.1";
 
@@ -135,10 +136,9 @@ class SetupFrame : public RTSPFrame {
         uint16_t RtpPort;
         uint16_t RtcpPort;
     };
-    // static std::expected<std::string, int> getClientPort(rtsp_parser::RequestHeaderKeyValue&
+    // static std::expected<std::string, int> getClientPort(RequestHeaderKeyValue&
     // requestHeaderKeyValue)
-    static std::optional<ClientPortsInfo>
-    getClientPort(const rtsp_parser::RequestFrame& requstFrame) {
+    static std::optional<ClientPortsInfo> getClientPort(const RequestFrame& requstFrame) {
         std::println("requestHeaderKeyValue.size=[{}]",
                      requstFrame.rtspRequestHeaderKeyValue.size());
         auto it = requstFrame.rtspRequestHeaderKeyValue.find("Transport");
@@ -184,8 +184,8 @@ class SetupFrame : public RTSPFrame {
 
 class PlayFrame : public RTSPFrame {
   public:
-    std::expected<std::string, int>
-    parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
+    std::expected<std::string, int> parseFrame(RtspContext&        rtspContext,
+                                               const RequestFrame& requstFrame) override {
         return "";
     }
 
@@ -202,3 +202,4 @@ class PlayFrame : public RTSPFrame {
         return resp1;
     }
 };
+}; // namespace rtsp_server

@@ -8,6 +8,7 @@
 #include <chrono>
 #include <format>
 
+namespace rtsp_server {
 inline std::string getTime(void);
 
 struct RtspContext {
@@ -45,3 +46,4 @@ inline std::string getTime(void) {
 
     // std::cout << formatted << std::endl;
 }
+};

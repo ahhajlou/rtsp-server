@@ -2,6 +2,7 @@
 #include "rtsp_parser.hpp"
 #include "rtsp_session.hpp"
 
+namespace rtsp_server {
 void Rtsp::accept(void) {
     std::cout << "I am in accept\n";
     for (;;) {
@@ -26,7 +27,7 @@ void Rtsp::session(tcp::socket sock) {
                 throw std::system_error(error); // Some other error.
             }
 
-            auto result = rtsp_parser::parser(asio::buffer(data, length));
+            auto result = parser(asio::buffer(data, length));
             if (!result.has_value()) {
                 std::cout << "Parse errrrrrorr" << std::endl;
                 sock.close();
@@ -60,7 +61,7 @@ void Rtsp::session(tcp::socket sock) {
                 return;
             }
 
-            // std::size_t written = asio::write(sock, asio::buffer(rtsp_parser::genResponse()));
+            // std::size_t written = asio::write(sock, asio::buffer(genResponse()));
             std::size_t written = asio::write(sock, asio::buffer(eventResult.value()));
             std::cout << "Written: " << written << std::endl;
         }
@@ -68,3 +69,4 @@ void Rtsp::session(tcp::socket sock) {
         std::cerr << "Exception in thread: " << e.what() << "\n";
     }
 }
+} // namespace rtsp_server

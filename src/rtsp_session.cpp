@@ -7,6 +7,7 @@
 #include <iostream>
 #include <chrono>
 
+namespace rtsp_server {
 RtspSession::RtspSession() : isPlaying(std::make_shared<std::atomic<bool>>(false)) {}
 
 RtspSession::~RtspSession() {
@@ -90,19 +91,19 @@ std::expected<RtspSessionState, int> RtspSession::changeState(RtspSessionState n
 std::expected<std::string, int> RtspSession::handleEvents(const RequestFrame& requstFrame) {
     switch (currentState) {
     case RtspSessionState::INIT:
-        if (requstFrame.rtspHeaderType == rtsp_parser::HeaderType::OPTIONS) {
+        if (requstFrame.rtspHeaderType == HeaderType::OPTIONS) {
             std::cout << "===> Options\n";
             // (void)changeState(RtspSessionState::INIT);
             (void)OptionFrame().parseFrame(rtspContext, requstFrame);
             middlewareProcess(rtspContext);
             return OptionFrame().genResponse(rtspContext).value();
             // return RtspSessionState::INIT;
-        } else if (requstFrame.rtspHeaderType == rtsp_parser::HeaderType::DESCRIBE) {
+        } else if (requstFrame.rtspHeaderType == HeaderType::DESCRIBE) {
             std::cout << "===> Describe\n";
             // (void)changeState(RtspSessionState::INIT);
             return DescribeFrame().genResponse(rtspContext).value();
             // return RtspSessionState::INIT;
-        } else if (requstFrame.rtspHeaderType == rtsp_parser::HeaderType::SETUP) {
+        } else if (requstFrame.rtspHeaderType == HeaderType::SETUP) {
             std::cout << "===> Setup\n";
             (void)changeState(RtspSessionState::READY);
             SetupFrame().parseFrame(rtspContext, requstFrame).value();
@@ -113,7 +114,7 @@ std::expected<std::string, int> RtspSession::handleEvents(const RequestFrame& re
         }
         break;
     case RtspSessionState::READY:
-        if (requstFrame.rtspHeaderType == rtsp_parser::HeaderType::PLAY) {
+        if (requstFrame.rtspHeaderType == HeaderType::PLAY) {
             std::cout << "===> Play\n";
             (void)changeState(RtspSessionState::PLAYING);
             return PlayFrame().genResponse(rtspContext).value();
@@ -123,7 +124,7 @@ std::expected<std::string, int> RtspSession::handleEvents(const RequestFrame& re
         }
         break;
     case RtspSessionState::PLAYING:
-        if (requstFrame.rtspHeaderType == rtsp_parser::HeaderType::PAUSE) {
+        if (requstFrame.rtspHeaderType == HeaderType::PAUSE) {
             // (void)changeState(RtspSessionState::READY);
             std::unexpected(-1);
             // return RtspSessionState::READY;
@@ -135,3 +136,4 @@ std::expected<std::string, int> RtspSession::handleEvents(const RequestFrame& re
 
     return std::unexpected(-1);
 }
+}; // namespace rtsp_server
