@@ -39,7 +39,6 @@ add_executable(
     # src/rtsp_session.cpp
     src/rtp_thread.cpp
     src/rtsp_fsm.cpp
-    src/rtsp_method_parser.cpp
     src/rtsp_types.cpp
 )
 target_link_libraries(${PROJECT_NAME} PRIVATE asio)

@@ -1,5 +1,6 @@
 #include "rtsp_frame_parser.hpp"
 #include "rtsp_types.hpp"
+#include <charconv>
 #include <iostream>
 #include <vector>
 #include <string>
@@ -23,10 +24,21 @@ std::expected<RtspRequest, RtspError> rtsp_frame_parser(asio::const_buffer buf) 
     const char*      data_ptr = static_cast<const char*>(buf.data());
     std::string_view stv = std::string_view(data_ptr, buf.size());
 
+    // Split head/body at the first blank line ("\r\n\r\n", "\n\n" fallback).
+    std::size_t sep_pos = stv.find("\r\n\r\n");
+    std::size_t sep_len = 4;
+    if (sep_pos == std::string_view::npos) {
+        sep_pos = stv.find("\n\n");
+        sep_len = 2;
+    }
+
+    std::string_view head = (sep_pos == std::string_view::npos) ? stv : stv.substr(0, sep_pos);
+    std::string_view body =
+        (sep_pos == std::string_view::npos) ? std::string_view{} : stv.substr(sep_pos + sep_len);
+
     std::size_t line_count{0};
     RtspRequest rtsp_request{};
-    // for (auto&& line : std::views::split(stv, '\r')) {
-    for (auto&& line : std::views::split(stv, '\n')) {
+    for (auto&& line : std::views::split(head, '\n')) {
         std::string_view line_sv(line.data(), line.size());
 
         if (line_sv.size() <= 0) {
@@ -69,6 +81,24 @@ std::expected<RtspRequest, RtspError> rtsp_frame_parser(asio::const_buffer buf) 
         }
 
         line_count++;
+    }
+
+    if (!body.empty()) {
+        rtsp_request.body = std::string(body);
+    }
+
+    // Validate declared Content-Length against what actually arrived.
+    auto cl_it = rtsp_request.headers.find("Content-Length");
+    if (cl_it != rtsp_request.headers.end()) {
+        std::size_t content_length{0};
+        auto [p, ec] = std::from_chars(cl_it->second.data(),
+                                       cl_it->second.data() + cl_it->second.size(), content_length);
+        if (ec != std::errc() || content_length > rtsp_request.body.size()) {
+            return std::unexpected(RtspError::ParseError);
+        }
+        // Extra bytes beyond Content-Length would belong to a pipelined
+        // message — not supported yet, so trim to the declared size.
+        rtsp_request.body.resize(content_length);
     }
 
     return rtsp_request;

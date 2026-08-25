@@ -5,7 +5,9 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <thread>
+#include <unordered_map>
 
 namespace rtsp_server {
 using SocketPort = uint16_t;
@@ -41,7 +43,8 @@ struct RtspResponse {
     HeaderMap   headers{};
     std::string body{};
 
-    std::string serialize(uint64_t cseq) const;
+    // Echoes the request's CSeq header verbatim (RFC 2326 12.19).
+    std::string serialize(std::string_view cseq) const;
 };
 
 struct PeerSocketInfo {
@@ -68,8 +71,9 @@ struct SessionContext {
     } rtp_thread;
 };
 
-inline std::string_view method_to_string(Method m);
-inline Method           method_from_string(std::string_view s);
-std::string_view        rtsp_response_reason_phrase(uint16_t status);
+std::string_view method_to_string(Method m);
+Method           method_from_string(std::string_view s);
+std::string_view rtsp_response_reason_phrase(uint16_t status);
+RtspResponse     make_error_response(RtspError error, std::string_view cseq);
 
 } // namespace rtsp_server

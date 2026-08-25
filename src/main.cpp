@@ -1,5 +1,4 @@
 #include "rtsp.hpp"
-#include "rtsp_method_parser.hpp"
 #include "rtsp_fsm.hpp"
 
 #include <cstdlib>
@@ -12,8 +11,6 @@ int main(int argc, char* argv[]) {
             std::cerr << "Usage: rtsp-server <port>\n";
             return 1;
         }
-
-        rtsp_server::make_default_transition_table();
 
         asio::io_context io_context;
 
