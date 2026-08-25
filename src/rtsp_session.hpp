@@ -2,8 +2,8 @@
 #define RTSP_SESSION_HPP
 
 #include "rtsp_parser.hpp"
-#include "RTPThread.hpp"
-#include "RTSPContext.hpp"
+#include "rtp_thread.hpp"
+#include "rtsp_context.hpp"
 
 #include <cstdint>
 #include <string>
