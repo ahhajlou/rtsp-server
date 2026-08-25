@@ -15,18 +15,18 @@ public:
     RTSPFrame() {}
     ~RTSPFrame() = default;
 
-    virtual std::expected<std::string, int> parseFrame(RTSPContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) = 0;
-    virtual std::expected<std::string, int> genResponse(const RTSPContext& rtspContext) = 0;
+    virtual std::expected<std::string, int> parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) = 0;
+    virtual std::expected<std::string, int> genResponse(const RtspContext& rtspContext) = 0;
 
 };
 
 class OptionFrame: public RTSPFrame {
 public:
-    std::expected<std::string, int> parseFrame(RTSPContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
+    std::expected<std::string, int> parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
         return "";
     }
 
-    std::expected<std::string, int> genResponse(const RTSPContext& rtspContext) override {
+    std::expected<std::string, int> genResponse(const RtspContext& rtspContext) override {
         // const std::string resp1 =
         //     "RTSP/1.0 200 OK\r\n"
         //     "CSeq: 1\r\n"
@@ -49,11 +49,11 @@ public:
 
 class DescribeFrame: public RTSPFrame {
 public:
-    std::expected<std::string, int> parseFrame(RTSPContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
+    std::expected<std::string, int> parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
         return "";
     }
 
-    std::expected<std::string, int> genResponse(const RTSPContext& rtspContext) override {
+    std::expected<std::string, int> genResponse(const RtspContext& rtspContext) override {
         const std::string resp1 =
             "RTSP/1.0 200 OK\r\n"
             "CSeq: 2\r\n"
@@ -89,7 +89,7 @@ public:
 
 class SetupFrame: public RTSPFrame {
 public:
-    std::expected<std::string, int> parseFrame(RTSPContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
+    std::expected<std::string, int> parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
         std::println("/// parsing SetupFrame ///");
         rtspContext.clientInfo.ipAddress = "127.0.0.1";
 
@@ -106,7 +106,7 @@ public:
         return "";
     }
 
-    std::expected<std::string, int> genResponse(const RTSPContext& rtspContext) override {
+    std::expected<std::string, int> genResponse(const RtspContext& rtspContext) override {
         // auto res = getClientPort(rtspContext.requestHeaderKeyValue);
         // if (!res.has_value()) {
         //     std::println("genResponse error");
@@ -178,11 +178,11 @@ private:
 
 class PlayFrame: public RTSPFrame {
 public:
-    std::expected<std::string, int> parseFrame(RTSPContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
+    std::expected<std::string, int> parseFrame(RtspContext& rtspContext, const rtsp_parser::RequestFrame& requstFrame) override {
         return "";
     }
 
-    std::expected<std::string, int> genResponse(const RTSPContext& rtspContext) override {
+    std::expected<std::string, int> genResponse(const RtspContext& rtspContext) override {
         const std::string resp1 =
             "RTSP/1.0 200 OK\r\n"
             "CSeq: 4\r\n"

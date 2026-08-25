@@ -12,9 +12,9 @@
 using asio::ip::tcp;
 
 
-class RTSP {
+class Rtsp {
 public:
-    RTSP(asio::io_context& io_context, uint16_t port)
+    Rtsp(asio::io_context& io_context, uint16_t port)
     : _acceptor(io_context, tcp::endpoint(tcp::v4(), port))
     //  _std_out(io_context, ::dup(STDOUT_FILENO))
     {

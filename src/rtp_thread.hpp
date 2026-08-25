@@ -8,16 +8,16 @@
 #include <asio.hpp>
 
 
-class RTPThread {
+class RtpThread {
 public:
-    RTPThread() = delete;
-    RTPThread(asio::ip::udp::endpoint clientEndpoint, std::shared_ptr<std::atomic<bool>> isPlaying);
-    ~RTPThread();
+    RtpThread() = delete;
+    RtpThread(asio::ip::udp::endpoint clientEndpoint, std::shared_ptr<std::atomic<bool>> isPlaying);
+    ~RtpThread();
 
-    RTPThread(const RTPThread&) = delete;
-    RTPThread& operator=(const RTPThread&) = delete;
-    RTPThread(RTPThread&&) = delete;
-    RTPThread& operator=(RTPThread&&) = delete;
+    RtpThread(const RtpThread&) = delete;
+    RtpThread& operator=(const RtpThread&) = delete;
+    RtpThread(RtpThread&&) = delete;
+    RtpThread& operator=(RtpThread&&) = delete;
 
     void stop(void);
 

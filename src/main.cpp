@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
     asio::io_context io_context;
 
-    RTSP rtsp(io_context, std::atoi(argv[1]));
+    Rtsp rtsp(io_context, std::atoi(argv[1]));
     rtsp.accept();
 
     // io_context.run();

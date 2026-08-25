@@ -2,22 +2,22 @@
 
 #include <print>
 
-RTPThread::RTPThread(
+RtpThread::RtpThread(
     asio::ip::udp::endpoint clientEndpoint,
     std::shared_ptr<std::atomic<bool>> isPlaying
 ) : m_clientEndpoint(clientEndpoint), m_isPlaying(isPlaying), m_running(true), m_serverRtpPort(0)
 {
     std::println("/// Starting thread ///");
-    m_thread = std::thread(&RTPThread::run, this);
+    m_thread = std::thread(&RtpThread::run, this);
 }
 
-RTPThread::~RTPThread()
+RtpThread::~RtpThread()
 {
     std::println("/// ~RTPThread ///");
     stop();
 }
 
-void RTPThread::stop(void)
+void RtpThread::stop(void)
 {
     std::println("/// Stop called ///");
     m_running.store(false, std::memory_order_release);
@@ -26,7 +26,7 @@ void RTPThread::stop(void)
     }
 }
 
-void RTPThread::run()
+void RtpThread::run()
 {
     using namespace std::chrono_literals;
 

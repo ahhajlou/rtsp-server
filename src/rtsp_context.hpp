@@ -12,7 +12,7 @@
 inline std::string getTime(void);
 
 
-struct RTSPContext {
+struct RtspContext {
     std::size_t cseq{};
     std::string sessionId{};
     std::string nowTime{};
@@ -30,7 +30,7 @@ struct RTSPContext {
     } clientInfo;
 };
 
-inline void middlewareProcess(RTSPContext& rtspContext)
+inline void middlewareProcess(RtspContext& rtspContext)
 {
     rtspContext.cseq++;
     rtspContext.nowTime = getTime();

@@ -3,7 +3,7 @@
 #include "rtsp_session.hpp"
 
 
-void RTSP::accept(void)
+void Rtsp::accept(void)
 {
     std::cout << "I am in accept\n";
     for (;;) {
@@ -11,7 +11,7 @@ void RTSP::accept(void)
     }
 }
 
-void RTSP::session(tcp::socket sock)
+void Rtsp::session(tcp::socket sock)
 {
     RtspSession rtspSession{};
 

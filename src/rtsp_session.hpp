@@ -44,8 +44,8 @@ private:
     std::shared_ptr<std::atomic<bool>> isPlaying;
     RtspSessionState currentState{RtspSessionState::INIT};
 
-    std::optional<RTPThread> rtpThread;
-    RTSPContext rtspContext;
+    std::optional<RtpThread> rtpThread;
+    RtspContext rtspContext;
 
     std::expected<RtspSessionState, int> changeState(RtspSessionState newState);
 };
