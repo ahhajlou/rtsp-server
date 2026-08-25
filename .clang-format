@@ -23,3 +23,5 @@ AlignConsecutiveDeclarations:
 # Include sorting
 SortIncludes: false
 IncludeBlocks: Preserve
+
+# AlwaysBreakAfterReturnType: All

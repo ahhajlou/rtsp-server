@@ -1,15 +1,6 @@
-//
-// async_udp_echo_server.cpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~
-//
-// Copyright (c) 2003-2026 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
-
 #include "rtsp.hpp"
-#include "rtsp_frame.hpp"
+#include "rtsp_method_parser.hpp"
+#include "rtsp_fsm.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -21,6 +12,8 @@ int main(int argc, char* argv[]) {
             std::cerr << "Usage: rtsp-server <port>\n";
             return 1;
         }
+
+        rtsp_server::make_default_transition_table();
 
         asio::io_context io_context;
 

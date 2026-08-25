@@ -1,8 +1,9 @@
 #pragma once
 
-#include "rtsp_parser.hpp"
+#include "rtsp_types.hpp"
+#include "rtsp_frame_parser.hpp"
 #include "rtp_thread.hpp"
-#include "rtsp_context.hpp"
+#include "rtsp_helper.hpp"
 
 #include <cstdint>
 #include <string>
@@ -12,28 +13,14 @@
 #include <optional>
 
 namespace rtsp_server {
-enum class RtspSessionState { INIT, READY, PLAYING };
-
-enum class RtspSessionEvent { OPTIONS, DESCRIBE, SETUP, PLAY, PAUSE, TEARDOWN };
-
 class RtspSession {
   public:
     RtspSession();
     ~RtspSession();
 
-    std::expected<std::string, int> handleEvents(const RequestFrame& requstFrame);
+    std::expected<std::string, int> handleEvents(const RtspRequest& rtsp_request);
 
   private:
-    std::size_t cseq{};
-    std::string sessionId{};
-    // std::jthread rtpThreadHandle;
-    bool                               rtpThreadCreated{false};
-    std::shared_ptr<std::atomic<bool>> isPlaying;
-    RtspSessionState                   currentState{RtspSessionState::INIT};
-
-    std::optional<RtpThread> rtpThread;
-    RtspContext              rtspContext;
-
-    std::expected<RtspSessionState, int> changeState(RtspSessionState newState);
+    RtspContext rtspContext;
 };
 }; // namespace rtsp_server

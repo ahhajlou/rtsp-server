@@ -1,6 +1,7 @@
 #include "rtsp.hpp"
-#include "rtsp_parser.hpp"
-#include "rtsp_session.hpp"
+#include "rtsp_types.hpp"
+#include "rtsp_frame_parser.hpp"
+// #include "rtsp_session.hpp"
 
 namespace rtsp_server {
 void Rtsp::accept(void) {
@@ -11,7 +12,8 @@ void Rtsp::accept(void) {
 }
 
 void Rtsp::session(tcp::socket sock) {
-    RtspSession rtspSession{};
+    // RtspSession    rtspSession{};
+    SessionContext session_context{};
 
     try {
         for (;;) {
@@ -27,43 +29,22 @@ void Rtsp::session(tcp::socket sock) {
                 throw std::system_error(error); // Some other error.
             }
 
-            auto result = parser(asio::buffer(data, length));
-            if (!result.has_value()) {
+            auto parser_result = rtsp_frame_parser(asio::buffer(data, length));
+            if (!parser_result.has_value()) {
                 std::cout << "Parse errrrrrorr" << std::endl;
                 sock.close();
                 return;
             }
 
-            // {
-            //     std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
-
-            //     for (const auto& [key, value] : result.value().rtspRequestHeaderKeyValue) {
-            //         std::cout << "\t\t=>" << key << ":" << value << "\n";
-            //     }
-
-            //     std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << std::endl;
-
-            //     {
-            //         auto it = result.value().rtspRequestHeaderKeyValue.find("CSeq");
-            //         if (it != result.value().rtspRequestHeaderKeyValue.end()) {
-            //             auto& entry = it->second;
-            //             std::cout <<  "Second === [" << entry << "]" << std::endl;
-            //         } else {
-            //             std::cout << "Not found\n";
-            //         }
-            //     }
+            // auto event_result = rtspSession.handleEvents(parser_result.value());
+            // if (!event_result.has_value()) {
+            //     std::cout << "Handle event error" << std::endl;
+            //     sock.close();
+            //     return;
             // }
 
-            auto eventResult = rtspSession.handleEvents(result.value());
-            if (!eventResult.has_value()) {
-                std::cout << "Handle event error" << std::endl;
-                sock.close();
-                return;
-            }
-
-            // std::size_t written = asio::write(sock, asio::buffer(genResponse()));
-            std::size_t written = asio::write(sock, asio::buffer(eventResult.value()));
-            std::cout << "Written: " << written << std::endl;
+            // std::size_t written = asio::write(sock, asio::buffer(event_result.value()));
+            // std::cout << "Written: " << written << std::endl;
         }
     } catch (std::exception& e) {
         std::cerr << "Exception in thread: " << e.what() << "\n";
