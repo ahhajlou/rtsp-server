@@ -21,7 +21,11 @@ void Rtsp::session(tcp::socket sock) {
             // std::array<char, max_length> data;
 
             std::error_code error;
-            size_t          length = sock.read_some(asio::buffer(data), error);
+
+            // TODO: Known limitation, not urgent: read_some() gives you whatever TCP delivered,
+            // possibly half a request or two pipelined ones. Robust RTSP needs accumulating
+            // into a buffer until \r\n\r\n plus Content-Length bytes
+            size_t length = sock.read_some(asio::buffer(data), error);
             if (error == asio::error::eof) {
                 std::cout << "Error: Connection closed" << std::endl;
                 break; // Connection closed cleanly by peer.

@@ -14,6 +14,14 @@ std::optional<std::string> OptionMethodParser::genResponse(const SessionContext&
     //     "Public: OPTIONS, DESCRIBE, ANNOUNCE, GET_PARAMETER, PAUSE, PLAY, RECORD, SETUP,
     //     SET_PARAMETER, TEARDOWN\r\n" "Server: GStreamer RTSP server\r\n" "Date: Fri, 23 Aug
     //     2026 00:04:52 GMT\r\n\r\n";
+
+    HeaderMap header_map{};
+    header_map.insert_or_assign("Public",
+                                "OPTIONS, DESCRIBE, ANNOUNCE, GET_PARAMETER, PAUSE, PLAY, RECORD, "
+                                "SETUP, SET_PARAMETER, TEARDOWN");
+
+    RtspResponse rtsp_response{.status = 200, .headers = std::move(header_map)};
+
     const std::string resp1 =
         std::format("RTSP/1.0 200 OK\r\n"
                     "CSeq: {}\r\n"
