@@ -18,7 +18,7 @@ RtspResponse base_response(uint16_t status) {
     return resp;
 }
 
-}; // namespace
+} // namespace
 
 // ---------------------------------------------------------------------
 // Request-side method parsing
@@ -205,4 +205,4 @@ FsmHandlerReturn dispatch(const TransitionTable& table, SessionContext& session,
     }
     return result;
 }
-}; // namespace rtsp_server
+} // namespace rtsp_server

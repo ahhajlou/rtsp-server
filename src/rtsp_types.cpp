@@ -37,4 +37,4 @@ Method method_from_string(std::string_view s) {
         return Method::Teardown;
     return Method::Unknown;
 }
-}; // namespace rtsp_server
+} // namespace rtsp_server

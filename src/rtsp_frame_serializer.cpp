@@ -73,4 +73,4 @@ RtspResponse make_error_response(RtspError error, std::string_view /*cseq*/) {
     resp.status = status;
     return resp;
 }
-}; // namespace rtsp_server
+} // namespace rtsp_server

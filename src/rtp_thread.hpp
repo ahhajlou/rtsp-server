@@ -32,4 +32,4 @@ class RtpThread {
 
     void run();
 };
-}; // namespace rtsp_server
+} // namespace rtsp_server

@@ -19,4 +19,4 @@ inline std::string get_time(void) {
     std::string formatted = std::format("{:%a, %d %b %Y %T GMT}", whole_seconds);
     return formatted;
 }
-}; // namespace rtsp_server
+} // namespace rtsp_server

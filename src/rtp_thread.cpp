@@ -59,4 +59,4 @@ void RtpThread::run() {
     rtp.send_to(asio::buffer("Bye\r\n"), m_clientEndpoint);
     rtp.close();
 }
-};
+} // namespace rtsp_server

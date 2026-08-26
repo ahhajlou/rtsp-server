@@ -15,4 +15,4 @@ struct RtspRequest {
 };
 
 std::expected<RtspRequest, RtspError> rtsp_frame_parser(asio::const_buffer buf);
-}; // namespace rtsp_server
+} // namespace rtsp_server

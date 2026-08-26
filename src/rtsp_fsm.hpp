@@ -89,4 +89,4 @@ inline const TransitionTable TRANSITION_TABLE = {
 
 FsmHandlerReturn dispatch(const TransitionTable& table, SessionContext& context,
                           const RtspRequest& req);
-}; // namespace rtsp_server
+} // namespace rtsp_server

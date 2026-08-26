@@ -18,7 +18,7 @@ constexpr std::string_view trim(std::string_view str) {
     auto end = str.find_last_not_of(ws);
     return str.substr(start, end - start + 1);
 }
-}; // namespace
+} // namespace
 
 std::expected<RtspRequest, RtspError> rtsp_frame_parser(asio::const_buffer buf) {
     const char*      data_ptr = static_cast<const char*>(buf.data());
@@ -103,4 +103,4 @@ std::expected<RtspRequest, RtspError> rtsp_frame_parser(asio::const_buffer buf) 
 
     return rtsp_request;
 }
-}; // namespace rtsp_server
+} // namespace rtsp_server

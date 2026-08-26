@@ -15,4 +15,4 @@ struct RtspResponse {
 };
 
 RtspResponse make_error_response(RtspError error, std::string_view cseq);
-}; // namespace rtsp_server
+} // namespace rtsp_server
