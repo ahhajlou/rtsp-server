@@ -1,5 +1,5 @@
 {
-    "editor.detectIndentation": true,
+    // "editor.detectIndentation": true,
     "editor.trimAutoWhitespace": true,
     "editor.formatOnSave": true,
     "files.trimTrailingWhitespace": true,

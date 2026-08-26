@@ -6,7 +6,7 @@
 TEST(RtspFrameParserTest, InvalidRtspPacketRandomStr) {
     auto my_buffer = asio::buffer("Hello World");
     auto result = rtsp_server::rtsp_frame_parser(my_buffer);
-    EXPECT_EQ(result.has_value(), false);
+    EXPECT_FALSE(result.has_value());
 }
 
 TEST(RtspFrameParserTest, ValidRtspPacket) {
@@ -14,7 +14,7 @@ TEST(RtspFrameParserTest, ValidRtspPacket) {
                                   "CSeq: 1\r\n"
                                   "User-Agent: Lavf62.3.100\r\n\r\n");
     auto result = rtsp_server::rtsp_frame_parser(my_buffer);
-    EXPECT_EQ(result.has_value(), true);
+    EXPECT_TRUE(result.has_value());
 }
 
 TEST(RtspFrameParserTest, InvalidRtspPacketBadHeader) {
@@ -22,5 +22,5 @@ TEST(RtspFrameParserTest, InvalidRtspPacketBadHeader) {
                                   "CSeq 1\r\n"
                                   "User-Agent Lavf62.3.100\r\n\r\n");
     auto result = rtsp_server::rtsp_frame_parser(my_buffer);
-    EXPECT_EQ(result.has_value(), false);
+    EXPECT_FALSE(result.has_value());
 }

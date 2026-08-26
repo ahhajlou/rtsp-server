@@ -1,0 +1,12 @@
+Checks: >
+  bugprone-*,
+  clang-analyzer-*,
+  cppcoreguidelines-*,
+  modernize-*,
+  performance-*,
+  readability-*,
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '^(src|tests)/'
+ExcludeHeaderFilterRegex: '.*gtest.*|.*gmock.*|.*third_party.*'
+FormatStyle: file
