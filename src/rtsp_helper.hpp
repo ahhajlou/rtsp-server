@@ -10,11 +10,6 @@
 #include <format>
 
 namespace rtsp_server {
-inline void middleware_process(SessionContext& session_context) {
-    session_context.cseq++;
-    // session_context.nowTime = getTime();
-}
-
 inline std::string get_time(void) {
     auto now = std::chrono::system_clock::now();
 

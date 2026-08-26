@@ -36,7 +36,6 @@ add_executable(
     src/main.cpp
     src/rtsp.cpp
     src/rtsp_frame_parser.cpp
-    # src/rtsp_session.cpp
     src/rtp_thread.cpp
     src/rtsp_fsm.cpp
     src/rtsp_types.cpp
