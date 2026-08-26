@@ -29,24 +29,6 @@ enum class RtspError {
 };
 
 using HeaderMap = std::unordered_map<std::string, std::string>;
-
-struct RtspRequest {
-    Method      method{};
-    std::string uri{};
-    std::string version{};
-    HeaderMap   headers{};
-    std::string body{}; // Optional
-};
-
-struct RtspResponse {
-    uint16_t    status{200};
-    HeaderMap   headers{};
-    std::string body{};
-
-    // Echoes the request's CSeq header verbatim (RFC 2326 12.19).
-    std::string serialize(std::string_view cseq) const;
-};
-
 struct PeerSocketInfo {
     std::string ip_address{};
     SocketPort  rtp_port{};
@@ -73,7 +55,4 @@ struct SessionContext {
 
 std::string_view method_to_string(Method m);
 Method           method_from_string(std::string_view s);
-std::string_view rtsp_response_reason_phrase(uint16_t status);
-RtspResponse     make_error_response(RtspError error, std::string_view cseq);
-
 } // namespace rtsp_server

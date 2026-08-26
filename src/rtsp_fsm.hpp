@@ -1,6 +1,8 @@
 #pragma once
 
 #include "rtsp_types.hpp"
+#include "rtsp_frame_parser.hpp"
+#include "rtsp_frame_serializer.hpp"
 #include <expected>
 #include <functional>
 #include <map>

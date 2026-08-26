@@ -20,12 +20,12 @@ class Rtsp {
 
     void accept(void);
 
-    static void session(tcp::socket sock);
+    static void connection(tcp::socket sock);
 
   private:
     tcp::acceptor _acceptor;
     //   asio::posix::stream_descriptor _std_out;
-    enum { max_length = 1024 };
-    char data_[max_length];
+    // enum { max_length = 1024 };
+    // char data_[max_length];
 };
 } // namespace rtsp_server

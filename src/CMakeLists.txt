@@ -6,6 +6,8 @@ add_library(rtsp_server_lib
     rtsp_frame_parser.cpp
     rtsp_fsm.cpp
     rtsp_types.cpp
+    rtsp_frame_serializer.cpp
+    rtsp_connection.cpp
 )
 
 target_include_directories(rtsp_server_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

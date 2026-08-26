@@ -4,6 +4,7 @@
 #include <chrono>
 #include <thread>
 #include <atomic>
+#include <memory>
 #include <asio.hpp>
 
 namespace rtsp_server {
@@ -31,4 +32,4 @@ class RtpThread {
 
     void run();
 };
-};
+}; // namespace rtsp_server
