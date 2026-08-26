@@ -10,8 +10,8 @@ target_include_directories(rtsp_server_tests PRIVATE ${CMAKE_SOURCE_DIR}/src)
 # Note: We apply project_warnings to tests but NOT to gtest itself
 target_link_libraries(rtsp_server_tests
     PRIVATE
-    gtest
-    gtest_main
+    GTest::gtest
+    GTest::gtest_main
     rtsp_server_lib
     project_warnings  # Apply warnings to test code only
 )
