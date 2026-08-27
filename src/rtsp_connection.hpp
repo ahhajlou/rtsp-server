@@ -16,7 +16,7 @@ using asio::ip::tcp;
 class RtspConnection {
   public:
     explicit RtspConnection(tcp::socket sock)
-        : m_sock(std::move(sock)), m_is_playing(std::make_shared<std::atomic<bool>>(false)) {}
+        : m_sock(std::move(sock)) /*, m_is_playing(std::make_shared<std::atomic<bool>>(false))*/ {}
 
     RtspConnection(const RtspConnection&) = delete;
     RtspConnection& operator=(const RtspConnection&) = delete;
@@ -34,7 +34,7 @@ class RtspConnection {
     tcp::socket    m_sock;
     SessionContext m_session_context{};
 
-    std::optional<RtpThread>           m_rtp_thread_handle;
-    std::shared_ptr<std::atomic<bool>> m_is_playing;
+    // std::optional<RtpThread>           m_rtp_thread_handle;
+    // std::shared_ptr<std::atomic<bool>> m_is_playing;
 };
 } // namespace rtsp_server
