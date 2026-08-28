@@ -2,8 +2,8 @@ name: Test project
 
 on:
   push:
-    branches:
-      - dev
+    # branches:
+    #   - dev
   workflow_dispatch:
 
 jobs:
@@ -16,9 +16,9 @@ jobs:
       - name: Instal dependencies
         run: |
           sudo apt-get -y update
-          sudo apt install -y pkg-config libavcodec-dev \
-          libavformat-dev libavutil-dev libswscale-dev \
-          libswresample-dev g++-14
+          sudo apt-get install -y pkg-config libavcodec-dev \
+            libavformat-dev libavutil-dev libswscale-dev \
+            libswresample-dev g++-14
 
       - name: Build
         run: |
