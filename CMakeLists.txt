@@ -42,3 +42,8 @@ enable_testing()
 
 add_subdirectory(src)
 add_subdirectory(tests)
+
+option(ENABLE_FUZZING "Build fuzz targets (requires Clang)" OFF)
+if(ENABLE_FUZZING)
+    add_subdirectory(fuzz)
+endif()

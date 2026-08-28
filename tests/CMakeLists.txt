@@ -14,6 +14,7 @@ FetchContent_MakeAvailable(googletest)
 # Create test executable
 add_executable(rtsp_server_tests
     rtsp_frame_parser_test.cpp
+    rtp_packet_test.cpp
 )
 
 # Include the src directory so tests can find headers
