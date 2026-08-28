@@ -13,9 +13,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Instal dependencies
+        run: |
+          sudo apt-get -y update
+          sudo apt install -y pkg-config libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev
+
       - name: Build
         run: |
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -GNinja
           cmake --build ./build
+
+      - name: Run tests
+        run: |
           cd build
           ctest
