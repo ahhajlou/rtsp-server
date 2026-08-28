@@ -16,11 +16,13 @@ jobs:
       - name: Instal dependencies
         run: |
           sudo apt-get -y update
-          sudo apt install -y pkg-config libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libswresample-dev
+          sudo apt install -y pkg-config libavcodec-dev \
+          libavformat-dev libavutil-dev libswscale-dev \
+          libswresample-dev g++-14
 
       - name: Build
         run: |
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -GNinja
+          cmake -S . -B build -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++-14
           cmake --build ./build
 
       - name: Run tests
