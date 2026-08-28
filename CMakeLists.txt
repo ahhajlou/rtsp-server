@@ -6,6 +6,24 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "14.0")
+        message(FATAL_ERROR
+            "GCC ${CMAKE_CXX_COMPILER_VERSION} is too old — this project needs "
+            "GCC >= 14 for <generator> (std::generator, C++23). "
+            "Install g++-14 or newer and pass -DCMAKE_CXX_COMPILER=g++-14.")
+    endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "17.0")
+        message(FATAL_ERROR
+            "Clang ${CMAKE_CXX_COMPILER_VERSION} is too old — this project needs "
+            "Clang >= 17 with libc++ for <generator> support.")
+    endif()
+else()
+    message(WARNING
+        "Unrecognized compiler ${CMAKE_CXX_COMPILER_ID} — std::generator support unverified.")
+endif()
+
 include(FetchContent)
 
 # ASIO
