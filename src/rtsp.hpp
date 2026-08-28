@@ -1,7 +1,6 @@
 #pragma once
 
 #include "rtsp_frame_parser.hpp"
-
 #include <cstdlib>
 #include <iostream>
 #include <thread>
@@ -14,18 +13,11 @@ using asio::ip::tcp;
 class Rtsp {
   public:
     Rtsp(asio::io_context& io_context, uint16_t port)
-        : _acceptor(io_context, tcp::endpoint(tcp::v4(), port))
-    //  _std_out(io_context, ::dup(STDOUT_FILENO))
-    {}
+        : _acceptor(io_context, tcp::endpoint(tcp::v4(), port)) {}
 
     void accept(void);
 
-    static void connection(tcp::socket sock);
-
   private:
     tcp::acceptor _acceptor;
-    //   asio::posix::stream_descriptor _std_out;
-    // enum { max_length = 1024 };
-    // char data_[max_length];
 };
 } // namespace rtsp_server
