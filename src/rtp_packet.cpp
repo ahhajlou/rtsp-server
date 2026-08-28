@@ -27,12 +27,6 @@ std::vector<uint8_t> RtpPacket::serialize(void) const {
 
     buffer[0] = first;
     buffer[1] = second;
-    // buffer.emplace_back((sequence_number & 0xFF00) >> 8);
-    // buffer.emplace_back(sequence_number & 0xFF);
-    // buffer.emplace_back((timestamp & 0xFF000000) >> 24);
-    // buffer.emplace_back((timestamp & 0xFF0000) >> 16);
-    // buffer.emplace_back((timestamp & 0xFF00) >> 8);
-    // buffer.emplace_back(timestamp & 0xFF);
 
     // const uint16_t sequence_number_be = toggle_endian(sequence_number);
     const uint16_t sequence_number_be = htons(sequence_number);
