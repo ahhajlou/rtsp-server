@@ -7,7 +7,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Chekout
+      - name: Checkout
         uses: actions/checkout@v7
 
       - name: Build
