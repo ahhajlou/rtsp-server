@@ -80,7 +80,7 @@ void RtpThread::run() {
         }
 
         if (video_stream_data.should_sleep) {
-            std::println("[rtp_thread] video stream sleep.");
+            // std::println("[rtp_thread] video stream sleep.");
             std::this_thread::sleep_for(video_stream_data.sleep_time);
         }
 
@@ -94,26 +94,89 @@ void RtpThread::run() {
                 break;
             }
 
-            RtpPacket rtp_packet{};
-            rtp_packet.ssrc = rtsp_ssrc;
-            rtp_packet.payload_type = 96U;
-            rtp_packet.sequence_number = rtsp_sequence_number;
-            rtp_packet.timestamp = video_stream_data.rtp_timestamp;
-
             if (nal_unit.size() <= MAX_RTP_NAL_UNIT_SIZE) {
+                RtpPacket rtp_packet{};
+                rtp_packet.ssrc = rtsp_ssrc;
+                rtp_packet.payload_type = 96U;
+                rtp_packet.sequence_number = rtsp_sequence_number++;
+                rtp_packet.timestamp = video_stream_data.rtp_timestamp;
                 rtp_packet.marker_bit = 1;
-                rtp_packet.payload = nal_unit;
+                // TODO: Maybe it is better to construct this std::vector at RtpPacket constuction,
+                // or use other design t oprevent copy and improve performance
+                rtp_packet.payload = std::move(nal_unit);
                 auto buffer_to_send = rtp_packet.serialize();
                 rtp.send_to(asio::buffer(buffer_to_send), m_clientEndpoint);
-                // rtp.send_to(asio::buffer(rtp_packet.serialize()), m_clientEndpoint);
             } else {
-                rtp_packet.marker_bit = 0;
-            }
+                // H.264 RFC 6184 FU-A Fragmentation for large NAL units
+                const size_t nal_unit_size = nal_unit.size();
+                if (nal_unit_size < 2) {
+                    continue; // Invalid NAL unit, skip
+                }
 
-            rtsp_sequence_number++;
+                const uint8_t nal_header = nal_unit[0];
+                const uint8_t nri = nal_header & 0x60; // Keep NRI (Priority)
+                const uint8_t original_type =
+                    nal_header & 0x1F; // Keep original NAL type (e.g., 1 or 5)
+
+                // FU-A Indicator: F=0, NRI=nri, Type=28 (FU-A)
+                const uint8_t fu_indicator = 0x00 | nri | 28;
+
+                // Max payload size per RTP packet.
+                // NOTE: Subtract 2 bytes for the FU-A headers.
+                // (If MAX_RTP_NAL_UNIT_SIZE is your total MTU limit like 1400,
+                // you should actually use: MAX_RTP_NAL_UNIT_SIZE - 12 (RTP header) - 2 (FU-A) =
+                // 1386)
+                const size_t max_chunk_payload = MAX_RTP_NAL_UNIT_SIZE - 2;
+
+                size_t current_offset = 1; // Start at byte 1 (skip the original NAL header)
+                bool   is_first_fragment = true;
+
+                while (current_offset < nal_unit_size) {
+                    size_t remaining_bytes = nal_unit_size - current_offset;
+                    size_t chunk_size = std::min(remaining_bytes, max_chunk_payload);
+                    bool   is_last_fragment = (current_offset + chunk_size == nal_unit_size);
+
+                    RtpPacket rtp_packet{};
+                    rtp_packet.ssrc = rtsp_ssrc;
+                    rtp_packet.payload_type = 96U;
+                    rtp_packet.sequence_number = rtsp_sequence_number++;
+                    rtp_packet.timestamp = video_stream_data.rtp_timestamp;
+
+                    // Marker bit is ONLY set on the very last fragment of the NAL unit
+                    rtp_packet.marker_bit = is_last_fragment ? 1 : 0;
+
+                    // Pre-allocate to prevent reallocations (Addresses your TODO)
+                    std::vector<uint8_t> fu_payload;
+                    fu_payload.reserve(2 + chunk_size);
+
+                    // 1. FU Indicator
+                    fu_payload.push_back(fu_indicator);
+
+                    // 2. FU Header
+                    uint8_t fu_header = 0x00;
+                    if (is_first_fragment) {
+                        fu_header |= 0x80; // S bit (Start)
+                    }
+                    if (is_last_fragment) {
+                        fu_header |= 0x40; // E bit (End)
+                    }
+                    fu_header |= original_type; // Original NAL Unit Type
+                    fu_payload.push_back(fu_header);
+
+                    // 3. Payload Data (The actual chunk of the NAL unit)
+                    fu_payload.insert(fu_payload.end(), nal_unit.begin() + current_offset,
+                                      nal_unit.begin() + current_offset + chunk_size);
+
+                    rtp_packet.payload = std::move(fu_payload);
+
+                    rtp.send_to(asio::buffer(rtp_packet.serialize()), m_clientEndpoint);
+
+                    current_offset += chunk_size;
+                    is_first_fragment = false;
+                }
+            }
         }
     }
-    video_s.close();
 
     /*
         while (m_running.load(std::memory_order_acquire)) {

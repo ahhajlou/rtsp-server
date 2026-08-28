@@ -160,34 +160,30 @@ void VideoStream::close() {
 
 VideoStreamLoopReturn VideoStream::loop(void) {
     int ret = 0;
-    // FILE* f = NULL;
     std::println("Started");
 
-    // VideoStreamData video_stream_data{};
     bool                                should_sleep{false};
     std::chrono::steady_clock::duration sleep_time{};
 
-    bool     is_first_packet = true;
+    bool     is_first_packet{true};
     auto     stream_start_time = std::chrono::steady_clock::now();
-    uint32_t first_rtp_timestamp = 0;
+    uint32_t first_rtp_timestamp{0U};
 
     while (av_read_frame(fmt_ctx, pkt) >= 0) {
         if (pkt->stream_index == video_stream_idx) {
 
             ///////////////////////////// TIME CALCULATION /////////////////////////////
 
-            // A. CALCULATE THE RTP TIMESTAMP (Your exact code)
+            // CALCULATE THE RTP TIMESTAMP (Your exact code)
             uint32_t current_rtp_ts{0U};
             if (pkt->pts != AV_NOPTS_VALUE) {
-                AVRational    rtp_time_base = {1, 90000};
                 const int64_t rtp_timestamp_64 =
-                    av_rescale_q(pkt->pts, video_stream->time_base, rtp_time_base);
+                    av_rescale_q(pkt->pts, video_stream->time_base, RTP_TIME_BASE);
                 current_rtp_ts = static_cast<uint32_t>(rtp_timestamp_64);
             } else if (pkt->dts != AV_NOPTS_VALUE) {
-                // Pro-tip: Some poorly muxed files lack pts but have dts. Use it as a backup!
-                AVRational    rtp_time_base = {1, 90000};
+                // Some poorly muxed files lack pts but have dts. Use it as a backup.
                 const int64_t rtp_timestamp_64 =
-                    av_rescale_q(pkt->dts, video_stream->time_base, rtp_time_base);
+                    av_rescale_q(pkt->dts, video_stream->time_base, RTP_TIME_BASE);
                 current_rtp_ts = static_cast<uint32_t>(rtp_timestamp_64);
             } else {
                 static uint32_t fallback_ts = 0;
@@ -195,21 +191,23 @@ VideoStreamLoopReturn VideoStream::loop(void) {
                 fallback_ts += 3000; // Assume 30fps
             }
 
-            // B. ESTABLISH TIME ZERO
+            // ESTABLISH TIME ZERO
             if (is_first_packet) {
                 first_rtp_timestamp = current_rtp_ts;
                 stream_start_time = std::chrono::steady_clock::now();
                 is_first_packet = false;
             }
 
-            // C. CALCULATE PACING SLEEP
+            // CALCULATE PACING SLEEP
             uint32_t ts_diff = current_rtp_ts - first_rtp_timestamp;
-            auto     expected_elapsed_us =
-                std::chrono::microseconds((static_cast<int64_t>(ts_diff) * 1000000) / 90000);
+            //// Convert RTP timestamp diff to microseconds for frame pacing.
+            //// Formula: (ticks * 1,000,000 us/sec) / 90,000 ticks/sec.
+            //// int64_t cast prevents 32-bit overflow during multiplication.
+            auto expected_elapsed_us = std::chrono::microseconds(
+                (static_cast<int64_t>(ts_diff) * MICROSECONDS_PER_SEC) / H264_RTP_CLOCK_RATE);
             auto actual_elapsed = std::chrono::steady_clock::now() - stream_start_time;
 
             if (expected_elapsed_us > actual_elapsed) {
-                // std::this_thread::sleep_for(expected_elapsed_us - actual_elapsed);
                 should_sleep = true;
                 sleep_time = expected_elapsed_us - actual_elapsed;
             } else {
@@ -245,21 +243,13 @@ VideoStreamLoopReturn VideoStream::loop(void) {
                     continue;
                 }
 
-                auto nal_units = parse_nalus(pkt);
-                // co_yield nal_units;
-                // video_stream_data.nal_units = nal_units;
+                auto            nal_units = parse_nalus(pkt);
                 VideoStreamData video_stream_data{.finished = false,
                                                   .rtp_timestamp = current_rtp_ts,
                                                   .should_sleep = should_sleep,
                                                   .sleep_time = sleep_time,
                                                   .nal_units{nal_units}};
                 co_yield video_stream_data;
-
-                // for (const auto& nal_unit : nal_units) {
-                //     co_yield nal_units;
-                // }
-
-                // ret = gsf_mpp_vo_vsend(VOLAYER_HD0, 1, 0, pkt->data, &attr);
 
 #if FFMPEG_PRINT_DEBUG_INFO // TODO: Check debug mode using global definition by the Makefile
                 printf("vsend ret:%d, video size:%d, pts:%llu\n", ret, attr.size, attr.pts);
@@ -269,10 +259,6 @@ VideoStreamLoopReturn VideoStream::loop(void) {
 
         av_packet_unref(pkt);
     }
-
-    // std::vector<std::vector<uint8_t>> final_ret{{}};
-    // std::vector<std::vector<uint8_t>> final_ret{}; // empty vector
-    // co_yield final_ret;
 
     VideoStreamData video_stream_data{.finished = true};
     co_yield video_stream_data;
