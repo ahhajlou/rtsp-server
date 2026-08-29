@@ -11,7 +11,7 @@ void RtspConnection::loop(void) {
             // robust server accumulates into a buffer until a complete
             // message (headers + Content-Length body) is available.
             std::error_code error;
-            size_t          length = m_sock.read_some(asio::buffer(data), error);
+            size_t length = m_sock.read_some(asio::buffer(data), error);
             if (error == asio::error::eof) {
                 std::cout << "Error: Connection closed" << std::endl;
                 break; // Connection closed cleanly by peer.

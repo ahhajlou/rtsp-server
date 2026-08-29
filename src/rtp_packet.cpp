@@ -14,8 +14,8 @@ namespace rtsp_server {
 // }
 std::vector<uint8_t> RtpPacket::serialize(void) const {
     std::vector<uint8_t> buffer(12);
-    uint8_t              first{0};
-    uint8_t              second{0};
+    uint8_t first{0};
+    uint8_t second{0};
 
     first |= (version & 0x03) << 6;
     first |= (padding & 0x1) << 5;

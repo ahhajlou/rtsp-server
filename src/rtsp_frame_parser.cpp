@@ -12,7 +12,7 @@ namespace rtsp_server {
 namespace {
 constexpr std::string_view trim(std::string_view str) {
     constexpr std::string_view ws = " \t\r\n";
-    auto                       start = str.find_first_not_of(ws);
+    auto start = str.find_first_not_of(ws);
     if (start == std::string_view::npos)
         return {};
     auto end = str.find_last_not_of(ws);
@@ -21,7 +21,7 @@ constexpr std::string_view trim(std::string_view str) {
 } // namespace
 
 std::expected<RtspRequest, RtspError> rtsp_frame_parser(asio::const_buffer buf) {
-    const char*      data_ptr = static_cast<const char*>(buf.data());
+    const char* data_ptr = static_cast<const char*>(buf.data());
     std::string_view stv = std::string_view(data_ptr, buf.size());
 
     // Split head/body at the first blank line ("\r\n\r\n", "\n\n" fallback).
@@ -48,7 +48,7 @@ std::expected<RtspRequest, RtspError> rtsp_frame_parser(asio::const_buffer buf) 
         line_sv = trim(line_sv);
 
         if (line_count == 0) {
-            auto                          split_view = line_sv | std::views::split(' ');
+            auto split_view = line_sv | std::views::split(' ');
             std::vector<std::string_view> tokens;
             for (auto&& subrange : split_view) {
                 tokens.emplace_back(subrange.data(), subrange.size());

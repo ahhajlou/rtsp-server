@@ -25,7 +25,7 @@ RtspResponse base_response(uint16_t status) {
 // Request-side method parsing
 // ---------------------------------------------------------------------
 
-std::expected<void, RtspError> parse_transport_header(SessionContext&    context,
+std::expected<void, RtspError> parse_transport_header(SessionContext& context,
                                                       const RtspRequest& req) {
     auto it = req.headers.find("Transport");
     if (it == req.headers.end()) {
@@ -36,8 +36,8 @@ std::expected<void, RtspError> parse_transport_header(SessionContext&    context
     // than matching the whole transport string (protocol token varies,
     // e.g. "RTP/AVP/UDP" vs "RTP/AVP").
     constexpr std::string_view key = "client_port=";
-    std::string_view           transport{it->second};
-    auto                       port_pos = transport.find(key);
+    std::string_view transport{it->second};
+    auto port_pos = transport.find(key);
     if (port_pos == std::string_view::npos) {
         return std::unexpected(RtspError::MalformedTransport);
     }
@@ -47,7 +47,7 @@ std::expected<void, RtspError> parse_transport_header(SessionContext&    context
         ports = ports.substr(0, param_end);
     }
 
-    auto             dash = ports.find('-');
+    auto dash = ports.find('-');
     std::string_view rtp_sv = (dash == std::string_view::npos) ? ports : ports.substr(0, dash);
 
     uint16_t rtp_port{0};
@@ -149,11 +149,11 @@ FsmHandlerReturn handle_play(SessionContext& context, const RtspRequest& req) {
     }
     if (!context.rtp_thread.rtp_thread_handle.has_value()) {
         // TODO: take the real client address from the TCP peer endpoint.
-        std::string               client_ip = context.client_rtp_sockt.ip_address.empty()
-                                                  ? "127.0.0.1"
-                                                  : context.client_rtp_sockt.ip_address;
-        asio::ip::udp::endpoint   client_ep{asio::ip::make_address_v4(client_ip),
-                                            context.client_rtp_sockt.rtp_port};
+        std::string client_ip = context.client_rtp_sockt.ip_address.empty()
+                                    ? "127.0.0.1"
+                                    : context.client_rtp_sockt.ip_address;
+        asio::ip::udp::endpoint client_ep{asio::ip::make_address_v4(client_ip),
+                                          context.client_rtp_sockt.rtp_port};
         video_stream::VideoStream video_s(context.video_file_path);
         context.rtp_thread.rtp_thread_handle.emplace(client_ep, context.rtp_thread.is_playing,
                                                      std::move(video_s));
@@ -202,7 +202,7 @@ FsmHandlerReturn dispatch(const TransitionTable& table, SessionContext& session,
         return std::unexpected(RtspError::InvalidStateForMethod);
     }
     const TransitionRule& rule = it->second;
-    auto                  result = rule.handle(session, req);
+    auto result = rule.handle(session, req);
     if (result) {
         session.state = rule.target; // only mutate on success — guard semantics
     }

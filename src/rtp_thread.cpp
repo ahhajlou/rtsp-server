@@ -11,15 +11,15 @@ namespace {
 constexpr size_t MAX_RTP_NAL_UNIT_SIZE{1400UL};
 
 uint32_t generate_ssrc(void) {
-    std::random_device                      rd;
-    std::mt19937                            gen(rd());
+    std::random_device rd;
+    std::mt19937 gen(rd());
     std::uniform_int_distribution<uint32_t> distrib(1, std::numeric_limits<uint32_t>::max());
     return distrib(gen);
 }
 } // namespace
-RtpThread::RtpThread(asio::ip::udp::endpoint            clientEndpoint,
+RtpThread::RtpThread(asio::ip::udp::endpoint clientEndpoint,
                      std::shared_ptr<std::atomic<bool>> isPlaying,
-                     video_stream::VideoStream          video_stream)
+                     video_stream::VideoStream video_stream)
     : m_clientEndpoint(clientEndpoint), m_isPlaying(isPlaying), m_running(true), m_serverRtpPort(0),
       m_video_stream(std::move(video_stream)) {
     std::println("/// Starting thread ///");
@@ -43,7 +43,7 @@ void RtpThread::run() {
     using namespace std::chrono_literals;
 
     std::cout << "Thread started\n";
-    asio::io_context      io;                                // local, never needs run()
+    asio::io_context io;                                     // local, never needs run()
     asio::ip::udp::socket rtp(io, {asio::ip::udp::v4(), 0}); // server_port
     m_serverRtpPort = rtp.local_endpoint().port();
     std::println("@@@@ server rtp port = [{}] | client rtp port = [{}] @@@@", m_serverRtpPort,
@@ -123,12 +123,12 @@ void RtpThread::run() {
                 const size_t max_chunk_payload = MAX_RTP_NAL_UNIT_SIZE - 2;
 
                 size_t current_offset = 1; // Start at byte 1 (skip the original NAL header)
-                bool   is_first_fragment = true;
+                bool is_first_fragment = true;
 
                 while (current_offset < nal_unit_size) {
                     size_t remaining_bytes = nal_unit_size - current_offset;
                     size_t chunk_size = std::min(remaining_bytes, max_chunk_payload);
-                    bool   is_last_fragment = (current_offset + chunk_size == nal_unit_size);
+                    bool is_last_fragment = (current_offset + chunk_size == nal_unit_size);
 
                     RtpPacket rtp_packet{};
                     rtp_packet.ssrc = rtsp_ssrc;

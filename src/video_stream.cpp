@@ -4,7 +4,7 @@
 
 namespace video_stream {
 int VideoStream::setup(void) {
-    int            ret = 0;
+    int ret = 0;
     enum AVCodecID codec_id;
 
     // Copy file_path string to local src_filename variable
@@ -162,11 +162,11 @@ VideoStreamLoopReturn VideoStream::loop(void) {
     int ret = 0;
     std::println("Started");
 
-    bool                                should_sleep{false};
+    bool should_sleep{false};
     std::chrono::steady_clock::duration sleep_time{};
 
-    bool     is_first_packet{true};
-    auto     stream_start_time = std::chrono::steady_clock::now();
+    bool is_first_packet{true};
+    auto stream_start_time = std::chrono::steady_clock::now();
     uint32_t first_rtp_timestamp{0U};
 
     while (av_read_frame(fmt_ctx, pkt) >= 0) {
@@ -243,7 +243,7 @@ VideoStreamLoopReturn VideoStream::loop(void) {
                     continue;
                 }
 
-                auto            nal_units = parse_nalus(pkt);
+                auto nal_units = parse_nalus(pkt);
                 VideoStreamData video_stream_data{.finished = false,
                                                   .rtp_timestamp = current_rtp_ts,
                                                   .should_sleep = should_sleep,
@@ -274,7 +274,7 @@ VideoStreamLoopReturn VideoStream::loop(void) {
  */
 int VideoStream::find_best_stream(int* stream_idx, AVFormatContext* fmt_ctx,
                                   enum AVMediaType type) {
-    int            ret, stream_index;
+    int ret, stream_index;
     const AVCodec* dec = NULL;
 
     ret = av_find_best_stream(fmt_ctx, type, -1, -1, NULL, 0);
@@ -309,7 +309,7 @@ enum H264NalUnitType {
 
 std::vector<std::vector<uint8_t>> VideoStream::parse_nalus(const AVPacket* pkt) {
     const uint8_t* data = pkt->data;
-    size_t         size = pkt->size;
+    size_t size = pkt->size;
 
     int nal_unit_in_pkt_count = 0;
 
@@ -317,7 +317,7 @@ std::vector<std::vector<uint8_t>> VideoStream::parse_nalus(const AVPacket* pkt) 
 
     size_t i = 0;
     while (i < size) {
-        int    start_code_size = 0;
+        int start_code_size = 0;
         size_t nal_start = 0;
 
         // 1. Find the start code (00 00 01 or 00 00 00 01)
@@ -357,7 +357,7 @@ std::vector<std::vector<uint8_t>> VideoStream::parse_nalus(const AVPacket* pkt) 
                 }
             }
 
-            size_t         nal_size = nal_end - nal_start;
+            size_t nal_size = nal_end - nal_start;
             const uint8_t* nal_payload = &data[nal_start];
 
             // Now you have:
