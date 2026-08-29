@@ -23,7 +23,7 @@ void RtspConnection::loop(void) {
             if (!parser_result.has_value()) {
                 std::cerr << "Frame parse error: " << static_cast<int>(parser_result.error())
                           << std::endl;
-                // Framing is broken — answer 400 and give up on this connection.
+                // Framing is broken, answer 400 and give up on this connection.
                 auto out = make_error_response(parser_result.error(), "0").serialize("0");
                 asio::write(m_sock, asio::buffer(out));
                 m_sock.close();

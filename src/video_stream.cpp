@@ -8,15 +8,15 @@ int VideoStream::setup(void) {
     enum AVCodecID codec_id;
 
     // Copy file_path string to local src_filename variable
-    if (src_filename == NULL || strlen(src_filename) == 0) {
+    if (m_src_filename.empty()) {
         fprintf(stderr, "\033[1;31mFile path string is NULL or empty.\033[0m\n");
         return -1;
     }
 
     // open input file, and allocate format context
-    ret = avformat_open_input(&fmt_ctx, src_filename, NULL, NULL);
+    ret = avformat_open_input(&fmt_ctx, m_src_filename.c_str(), NULL, NULL);
     if (ret < 0) {
-        fprintf(stderr, "Could not open source file---> %s\n", src_filename);
+        fprintf(stderr, "Could not open source file---> %s\n", m_src_filename.c_str());
         return -1;
     }
 
@@ -74,7 +74,7 @@ int VideoStream::setup(void) {
     }
 
 #if 1 // TODO: Check debug mode using global definition by the Makefile
-    av_dump_format(fmt_ctx, 0, src_filename, 0);
+    av_dump_format(fmt_ctx, 0, m_src_filename.c_str(), 0);
 #endif
 
     pkt = av_packet_alloc();
@@ -280,7 +280,7 @@ int VideoStream::find_best_stream(int* stream_idx, AVFormatContext* fmt_ctx,
     ret = av_find_best_stream(fmt_ctx, type, -1, -1, NULL, 0);
     if (ret < 0) {
         fprintf(stderr, "Could not find %s stream in input file '%s'\n",
-                av_get_media_type_string(type), src_filename);
+                av_get_media_type_string(type), m_src_filename.c_str());
         return ret;
     }
 

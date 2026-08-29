@@ -15,8 +15,10 @@ using asio::ip::tcp;
 
 class RtspConnection {
   public:
-    explicit RtspConnection(tcp::socket sock)
-        : m_sock(std::move(sock)) /*, m_is_playing(std::make_shared<std::atomic<bool>>(false))*/ {}
+    explicit RtspConnection(tcp::socket sock, const std::string video_file_path)
+        : m_sock(std::move(sock)) {
+        m_session_context.video_file_path = video_file_path;
+    }
 
     RtspConnection(const RtspConnection&) = delete;
     RtspConnection& operator=(const RtspConnection&) = delete;
@@ -33,8 +35,5 @@ class RtspConnection {
   private:
     tcp::socket    m_sock;
     SessionContext m_session_context{};
-
-    // std::optional<RtpThread>           m_rtp_thread_handle;
-    // std::shared_ptr<std::atomic<bool>> m_is_playing;
 };
 } // namespace rtsp_server

@@ -27,12 +27,12 @@ struct VideoStreamData {
     std::vector<std::vector<uint8_t>>   nal_units;
 };
 
-// using VideoStreamLoopReturn = std::generator<std::vector<std::vector<uint8_t>>>;
 using VideoStreamLoopReturn = std::generator<VideoStreamData>;
 
 class VideoStream {
   public:
-    VideoStream() = default;
+    VideoStream() = delete;
+    explicit VideoStream(const std::string src_filename) : m_src_filename(src_filename) {}
     ~VideoStream() { close(); };
 
     int  setup(void);
@@ -72,14 +72,14 @@ class VideoStream {
     int find_best_stream(int* stream_idx, AVFormatContext* fmt_ctx, enum AVMediaType type);
 
   private:
-    AVPacket*                    pkt = NULL;
-    AVFormatContext*             fmt_ctx = NULL;
-    AVBSFContext*                bsf_ctx = NULL;
-    AVFormatContext*             ofmt_ctx = NULL;
-    AVStream*                    video_stream = NULL;
-    int                          video_stream_idx = -1;
-    static constexpr const char* src_filename =
-        "/home/amirhossein/Github/rtsp-server/assets/out.mp4";
+    AVPacket*         pkt = NULL;
+    AVFormatContext*  fmt_ctx = NULL;
+    AVBSFContext*     bsf_ctx = NULL;
+    AVFormatContext*  ofmt_ctx = NULL;
+    AVStream*         video_stream = NULL;
+    int               video_stream_idx = -1;
+    const std::string m_src_filename;
+
     static constexpr int        H264_RTP_CLOCK_RATE{90000}; // 90 kHz standard for H.264
     static constexpr int64_t    MICROSECONDS_PER_SEC{1000000};
     static constexpr AVRational RTP_TIME_BASE = {1, H264_RTP_CLOCK_RATE};

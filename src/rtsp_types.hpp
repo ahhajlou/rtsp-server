@@ -40,6 +40,8 @@ struct SessionContext {
     std::string  session_id{};
     SessionState state{SessionState::Init};
 
+    std::string video_file_path{};
+
     // Playback bookkeeping
     double npt_position_seconds = 0.0;
     bool   transport_configured = false;

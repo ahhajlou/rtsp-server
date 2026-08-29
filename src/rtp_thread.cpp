@@ -1,6 +1,5 @@
 #include "rtp_thread.hpp"
 #include "rtp_packet.hpp"
-#include "video_stream.hpp"
 #include "rtsp_types.hpp"
 #include <print>
 #include <random>
@@ -19,9 +18,10 @@ uint32_t generate_ssrc(void) {
 }
 } // namespace
 RtpThread::RtpThread(asio::ip::udp::endpoint            clientEndpoint,
-                     std::shared_ptr<std::atomic<bool>> isPlaying)
-    : m_clientEndpoint(clientEndpoint), m_isPlaying(isPlaying), m_running(true),
-      m_serverRtpPort(0) {
+                     std::shared_ptr<std::atomic<bool>> isPlaying,
+                     video_stream::VideoStream          video_stream)
+    : m_clientEndpoint(clientEndpoint), m_isPlaying(isPlaying), m_running(true), m_serverRtpPort(0),
+      m_video_stream(std::move(video_stream)) {
     std::println("/// Starting thread ///");
     m_thread = std::thread(&RtpThread::run, this);
 }
@@ -52,17 +52,12 @@ void RtpThread::run() {
     uint32_t rtsp_ssrc = generate_ssrc();
     uint16_t rtsp_sequence_number{0U};
 
-    video_stream::VideoStream video_s;
-    video_s.setup();
-    // auto result = video_s.loop();
-    for (const auto video_stream_data : video_s.loop()) {
-        // if (nal_units.empty()) { // TODO: or: nal_units[0].empty()
-        //     std::println("/// Generator returned empty");
-        //     break;
-        // }
+    if (m_video_stream.setup() < 0) {
+        std::println(stderr, "m_video_stream.setup failed");
+        return;
+    }
 
-        // std::println("/// Generator returned 2D vector. size={}", nal_units[0].size());
-
+    for (const auto video_stream_data : m_video_stream.loop()) {
         if (!m_running.load(std::memory_order_acquire)) {
             std::println("[rtp_thread] thread stop requested.");
             break;
@@ -80,7 +75,6 @@ void RtpThread::run() {
         }
 
         if (video_stream_data.should_sleep) {
-            // std::println("[rtp_thread] video stream sleep.");
             std::this_thread::sleep_for(video_stream_data.sleep_time);
         }
 
@@ -178,31 +172,8 @@ void RtpThread::run() {
         }
     }
 
-    /*
-        while (m_running.load(std::memory_order_acquire)) {
-            try {
-                if (!m_isPlaying->load(std::memory_order_acquire)) {
-                    std::cout << "stopped\n";
-                    m_isPlaying->wait(false, std::memory_order_acquire);
-                }
-
-                // while (isPlaying->load()) {
-                // if (stoken.stop_requested()) {
-                //     break;
-                // }
-                // auto pkt = buildRtpPacket();
-                // rtp.send_to(asio::buffer(pkt), clientEp);   // blocking
-                // std::this_thread::sleep_for(33ms);
-
-                rtp.send_to(asio::buffer("Hello World\r\n"), m_clientEndpoint);
-                std::this_thread::sleep_for(2s); // Sleeps for 2 seconds
-            } catch (std::exception& e) {
-                std::cerr << "Exception in thread: " << e.what() << "\n";
-            }
-        }
-    */
-    std::cout << "Thread stopped\n";
-    rtp.send_to(asio::buffer("Bye\r\n"), m_clientEndpoint);
+    m_video_stream.close();
     rtp.close();
+    std::cout << "Thread stopped\n";
 }
 } // namespace rtsp_server

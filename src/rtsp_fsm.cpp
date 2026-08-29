@@ -1,5 +1,6 @@
 #include "rtsp_fsm.hpp"
 #include "rtsp_helper.hpp"
+#include "video_stream.hpp"
 
 #include <charconv>
 #include <chrono>
@@ -148,12 +149,14 @@ FsmHandlerReturn handle_play(SessionContext& context, const RtspRequest& req) {
     }
     if (!context.rtp_thread.rtp_thread_handle.has_value()) {
         // TODO: take the real client address from the TCP peer endpoint.
-        std::string             client_ip = context.client_rtp_sockt.ip_address.empty()
-                                                ? "127.0.0.1"
-                                                : context.client_rtp_sockt.ip_address;
-        asio::ip::udp::endpoint client_ep{asio::ip::make_address_v4(client_ip),
-                                          context.client_rtp_sockt.rtp_port};
-        context.rtp_thread.rtp_thread_handle.emplace(client_ep, context.rtp_thread.is_playing);
+        std::string               client_ip = context.client_rtp_sockt.ip_address.empty()
+                                                  ? "127.0.0.1"
+                                                  : context.client_rtp_sockt.ip_address;
+        asio::ip::udp::endpoint   client_ep{asio::ip::make_address_v4(client_ip),
+                                            context.client_rtp_sockt.rtp_port};
+        video_stream::VideoStream video_s(context.video_file_path);
+        context.rtp_thread.rtp_thread_handle.emplace(client_ep, context.rtp_thread.is_playing,
+                                                     std::move(video_s));
         context.server_rtp_sockt.rtp_port = context.rtp_thread.rtp_thread_handle->serverRtpPort();
     }
     context.rtp_thread.is_playing->store(true, std::memory_order_release);
